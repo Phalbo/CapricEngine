@@ -2,6 +2,8 @@
 // CapricEngine - Vocal Line Generator
 // Modificato per utilizzare section.mainChordSlots e senza la definizione interna di VOCAL_STYLE_PROFILES.
 
+require('../lib/config-music-data.js');
+
 // const TICKS_PER_QUARTER_NOTE_REFERENCE_VOCAL = 128; // Usa la costante globale TICKS_PER_QUARTER_NOTE_REFERENCE
 const MIN_VOCAL_MIDI_PITCH_VOCAL = 53; // F3
 const MAX_VOCAL_MIDI_PITCH_VOCAL = 81; // A5
