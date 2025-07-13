@@ -325,7 +325,10 @@ function applyRhythmicPatternToSlot(
         } else {
             // Fallback: se non è stata generata una nota, suona la fondamentale per il resto dello slot
             // o per un beat, per evitare il silenzio.
-            const fallbackDuration = Math.min(remainingTicks, ticksPerBeat);
+// Fallback: se non è stata generata una nota, suona la fondamentale per il resto dello slot
+// o per un beat, per evitare il silenzio.
+const fallbackDuration = Math.max(minSensibleNoteDuration, Math.min(remainingTicks, ticksPerBeat));
+
             const fallbackPitch = ensureMidiPitchInRange(
                 rootMidiForOctave,
                 lastEventPitchInSlot,
