@@ -5,6 +5,10 @@
 
 require('../lib/config-music-data.js');
 
+if (typeof require !== 'undefined') {
+    require('../lib/config-music-data.js');
+}
+
 const MIN_BASS_MIDI_BASSLINE = 36; // E1
 const MAX_BASS_MIDI_BASSLINE = 57; // A2
 
