@@ -1,5 +1,10 @@
 // File: gen/generateBassLineForSong_v2.js
-// CapricEngine - New Bass Line Generator - v1.1
+
+// CapricEngine - New Bass Line Generator - v1.0
+if (typeof require !== 'undefined') {
+    require('../lib/config-music-data.js');
+}
+
 
 const MIN_BASS_MIDI = 36; // E1
 const MAX_BASS_MIDI = 60; // C3
