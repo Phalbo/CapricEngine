@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Test Bassline Generation</title>
+  <script src="lib/midiwriter.js"></script>
+</head>
+<body>
+  <h1>Test Bassline Generation</h1>
+  <button id="generateButton">Generate Bassline</button>
+  <script src="lib/config-music-data.js"></script>
+  <script src="lib/theory-helpers.js"></script>
+  <script src="lib/harmonic-patterns-config.js"></script>
+  <script src="lib/passing-chords-config.js"></script>
+  <script src="lib.vocal_profiles.js"></script>
+  <script src="lib/chord-renderer.js"></script>
+  <script src="lib/scale-renderer.js"></script>
+  <script src="lib/drum-patterns-library.js"></script>
+  <script src="lib/chord-rhythm-generator.js"></script>
+  <script src="gen/generateBassLineForSong.js"></script>
+  <script>
+    document.getElementById('generateButton').addEventListener('click', () => {
+      const songMidiData = {
+        sections: [
+          {
+            mainChordSlots: [
+              { chordName: 'C', effectiveStartTickInSection: 0, effectiveDurationTicks: 768 },
+              { chordName: 'G', effectiveStartTickInSection: 768, effectiveDurationTicks: 768 },
+              { chordName: 'Am', effectiveStartTickInSection: 1536, effectiveDurationTicks: 768 },
+              { chordName: 'F', effectiveStartTickInSection: 2304, effectiveDurationTicks: 768 },
+            ],
+            timeSignature: [4, 4],
+            startTick: 0,
+          },
+        ],
+      };
+      const mainScaleNotesNames = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
+      const rootNoteOfScale = 'C';
+      const CHORD_LIB_REF = {}; // Mock chord library
+      const scales_REF = {}; // Mock scales library
+      const NOTE_NAMES_CONST_REF = NOTE_NAMES;
+      const ALL_NOTES_WITH_FLATS_REF = allNotesWithFlats;
+      const passedGetChordNotesFunc = () => ({ notes: [] });
+      const passedGetNoteNameFunc = () => '';
+      const passedGetRandomElementFunc = (arr) => arr[Math.floor(Math.random() * arr.length)];
+      const passedGetChordRootAndTypeFunc = (chord) => ({ root: chord });
+
+      const bassLine = generateBassLineForSong(
+        songMidiData,
+        mainScaleNotesNames,
+        rootNoteOfScale,
+        CHORD_LIB_REF,
+        scales_REF,
+        NOTE_NAMES_CONST_REF,
+        ALL_NOTES_WITH_FLATS_REF,
+        passedGetChordNotesFunc,
+        passedGetNoteNameFunc,
+        passedGetRandomElementFunc,
+        passedGetChordRootAndTypeFunc
+      );
+
+      console.log(bassLine);
+    });
+  </script>
+</body>
+</html>
