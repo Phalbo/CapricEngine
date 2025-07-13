@@ -128,19 +128,6 @@ function generateChordsForSection(
     if (lydianChords && lydianChords.length > 1 && typeof lydianChords[1] === 'string') rn['IILydian'] = lydianChords[1];
     else rn['IILydian'] = (getChordRootAndType(diatonics[1])?.root || keyRoot) + "IILYD_ERR";
 
-    if (cleanSectionNameForStyle === "chorus") {
-        if (progressionCache.chorus) {
-            progressionCache.chorus.forEach(c => allGeneratedChordsSet.add(c));
-            return [...progressionCache.chorus];
-        }
-    } else if (cleanSectionNameForStyle === "verse") {
-        if (progressionCache.verse) {
-            const variedVerseProg = progressionCache.verse.map(chord => normalizeChordNameToSharps(colorizeChord(chord, mood, keyInfo)));
-            variedVerseProg.forEach(c => allGeneratedChordsSet.add(c));
-            return variedVerseProg;
-        }
-    }
-
     const sectionChordParamsKey = cleanSectionNameForStyle === "bridge-mod" ? "bridge-mod" : cleanSectionNameForStyle;
     const sectionChordParams = SECTION_CHORD_TARGETS[sectionChordParamsKey] || SECTION_CHORD_TARGETS[getCleanSectionName(sectionName.split(" ")[0])] || SECTION_CHORD_TARGETS["default"];
 
@@ -228,10 +215,9 @@ function generateChordsForSection(
         return normalizedFinalChord;
     });
 
-    if (cleanSectionNameForStyle === "chorus" && !progressionCache.chorus) {
-        progressionCache.chorus = [...finalBaseProgression];
-    } else if (cleanSectionNameForStyle === "verse" && !progressionCache.verse) {
-        progressionCache.verse = [...finalBaseProgression];
+  if (progressionCache) {
+        progressionCache[sectionCacheKey] = [...finalBaseProgression];
+        console.log(`Generated new progression for section ${sectionCacheKey}:`, finalBaseProgression);
     }
     return finalBaseProgression;
 }
@@ -335,7 +321,7 @@ async function generateSongArchitecture() {
 
         const allGeneratedChordsSet = new Set();
         let totalSongMeasures = 0;
-        const progressionCache = { verse: null, chorus: null };
+        const progressionCache = {};
         let currentGlobalTickForTS = 0;
         const rawMidiSectionsData = []; 
 
@@ -373,8 +359,17 @@ async function generateSongArchitecture() {
             const finalMeasures = measures || durationParams.typicalMin;
             totalSongMeasures += finalMeasures;
 
-            const baseChordProgressionForSection = generateChordsForSection(sectionNameString, selectedKey, mood, allGeneratedChordsSet, finalMeasures, activeTimeSignatureForSectionLogic, progressionCache);
-
+        const baseChordProgressionForSection = generateChordsForSection(
+                sectionNameString,
+                selectedKey,
+                mood,
+                allGeneratedChordsSet,
+                finalMeasures,
+                activeTimeSignatureForSectionLogic,
+                progressionCache,
+                { varyChance: 0.05 }
+            );
+            
             rawMidiSectionsData.push({
                 name: sectionNameString,
                 baseChords: baseChordProgressionForSection, 
@@ -637,9 +632,11 @@ async function generateSongArchitecture() {
         if (typeof updateEstimatedSongDuration === "function") {
             updateEstimatedSongDuration();
         }
-        if (typeof buildSongDataForTextFile === "function") {
+      if (typeof buildSongDataForTextFile === "function") {
             buildSongDataForTextFile();
         }
+
+        console.log("Progression cache during generation:", progressionCache);
 
         if (midiSectionTitleElement) midiSectionTitleElement.style.display = 'block';
         actionButtonIDs.forEach(id => {
@@ -726,4 +723,23 @@ function recalculateTimeSignatureChangesAndSectionTicks() {
             initialTimeSigElement.innerHTML = `<strong>Meter:</strong> ${firstTS[0]}/${firstTS[1]}`;
         }
     }
+}
+
+function applyProgressionVariation(baseProgression, mood, keyInfo) {
+    if (!Array.isArray(baseProgression) || baseProgression.length === 0) return baseProgression;
+    const newProg = [...baseProgression];
+    if (Math.random() < 0.5) {
+        // Vary length by adding or removing last chord
+        if (Math.random() < 0.5 && newProg.length > 1) {
+            newProg.pop();
+        } else {
+            const lastChord = newProg[newProg.length - 1];
+            newProg.push(lastChord);
+        }
+    } else {
+        // Vary final chord quality
+        const lastChord = newProg[newProg.length - 1];
+        newProg[newProg.length - 1] = normalizeChordNameToSharps(colorizeChord(lastChord, mood, keyInfo));
+    }
+    return newProg;
 }
