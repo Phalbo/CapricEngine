@@ -3,8 +3,6 @@
 // Versione corretta per preservare le funzioni 'apply' durante il cloning del pattern,
 // utilizzare TICKS_PER_QUARTER_NOTE_REFERENCE globale, e con log di debug migliorati.
 
-require('../lib/config-music-data.js');
-
 if (typeof require !== 'undefined') {
     require('../lib/config-music-data.js');
 }
