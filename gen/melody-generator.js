@@ -1,9 +1,11 @@
 // File: gen/melody-generator.js
 // Genera una traccia melodica "Fake Inspiration" per la canzone.
 // Modificato per utilizzare section.mainChordSlots per durate accurate degli accordi.
+
 if (typeof require !== 'undefined') {
     require('../lib/config-music-data.js');
 }
+
 
 const TPQN_MELODY =
     typeof TICKS_PER_QUARTER_NOTE_REFERENCE !== 'undefined'
