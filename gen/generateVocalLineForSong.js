@@ -2,8 +2,6 @@
 // CapricEngine - Vocal Line Generator
 // Modificato per utilizzare section.mainChordSlots e senza la definizione interna di VOCAL_STYLE_PROFILES.
 
-require('../lib/config-music-data.js');
-
 if (typeof require !== 'undefined') {
     require('../lib/config-music-data.js');
 }
