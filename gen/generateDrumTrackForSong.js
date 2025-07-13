@@ -117,12 +117,12 @@ function generateDrumTrackForSong(
         }
 
         // *** CORREZIONE DEL METODO DI CLONING PER PRESERVARE LE FUNZIONI 'apply' ***
-        let currentActivePattern = {␊
-            ...sectionBasePatternForSection,␊
-            measureEvents: JSON.parse(JSON.stringify(sectionBasePatternForSection.measureEvents || [])),␊
-            variations: (sectionBasePatternForSection.variations || []).map(v_orig => {␊
-                if (v_orig && typeof v_orig.apply === 'function') { // Copia solo se la variazione è valida e ha apply␊
-                    return { ...v_orig }; // Shallow copy dell'oggetto variation; 'apply' è copiato per riferimento.␊
+        let currentActivePattern = {
+            ...sectionBasePatternForSection,
+            measureEvents: JSON.parse(JSON.stringify(sectionBasePatternForSection.measureEvents || [])),
+            variations: (sectionBasePatternForSection.variations || []).map(v_orig => {
+                if (v_orig && typeof v_orig.apply === 'function') { // Copia solo se la variazione è valida e ha apply
+                    return { ...v_orig }; // Shallow copy dell'oggetto variation; 'apply' è copiato per riferimento.
                 }
                 // console.warn("generateDrumTrackForSong: Oggetto variation malformato o apply non è una funzione in sectionBasePatternForSection:", sectionBasePatternForSection.name, v_orig);
                 return null;
