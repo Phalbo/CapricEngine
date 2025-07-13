@@ -1,0 +1,70 @@
+[25-May-2025 19:13:34 UTC] ---------------------------------------------------------
+[25-May-2025 19:13:34 UTC] CapricEngine PHP: Richiesta ricevuta.
+[25-May-2025 19:13:34 UTC] CapricEngine PHP: Key ricevuta dal client: NULL
+[25-May-2025 19:13:34 UTC] CapricEngine PHP: Suffix ricevuto dal client: NULL
+[25-May-2025 19:15:12 UTC] ---------------------------------------------------------
+[25-May-2025 19:15:12 UTC] CapricEngine PHP: Richiesta ricevuta.
+[25-May-2025 19:15:12 UTC] CapricEngine PHP: Key ricevuta dal client: C
+[25-May-2025 19:15:12 UTC] CapricEngine PHP: Suffix ricevuto dal client: maj
+[25-May-2025 19:15:12 UTC] CapricEngine PHP: URL GitHub Costruito: https://raw.githubusercontent.com/szaza/guitar-chords-db-json/master/chords/C/maj.json
+[25-May-2025 19:15:13 UTC] CapricEngine PHP Error: Fallito fetch da GitHub. URL: https://raw.githubusercontent.com/szaza/guitar-chords-db-json/master/chords/C/maj.json | HTTP Code: 404 | cURL ErrorNo: 0 | cURL ErrorMsg:  | JSON Data (se presente): 404: Not Found
+[25-May-2025 19:18:54 UTC] ---------------------------------------------------------
+[25-May-2025 19:18:54 UTC] CapricEngine PHP (GitHub Fetch): Richiesta ricevuta.
+[25-May-2025 19:18:54 UTC] CapricEngine PHP (GitHub Fetch): Key dal client: C
+[25-May-2025 19:18:54 UTC] CapricEngine PHP (GitHub Fetch): Suffix dal client: maj
+[25-May-2025 19:18:54 UTC] CapricEngine PHP (GitHub Fetch): URL GitHub costruito per il fetch: https://raw.githubusercontent.com/szaza/guitar-chords-db-json/master/chords/C/maj.json
+[25-May-2025 19:18:54 UTC] CapricEngine PHP (GitHub Fetch) ERRORE: Fallito fetch da GitHub. URL: https://raw.githubusercontent.com/szaza/guitar-chords-db-json/master/chords/C/maj.json | HTTP Code: 404 | cURL ErrorNo: 0 | cURL ErrorMsg: 
+[25-May-2025 19:19:19 UTC] ---------------------------------------------------------
+[25-May-2025 19:19:19 UTC] CapricEngine PHP (GitHub Fetch): Richiesta ricevuta.
+[25-May-2025 19:19:19 UTC] CapricEngine PHP (GitHub Fetch): Key dal client: C#
+[25-May-2025 19:19:19 UTC] CapricEngine PHP (GitHub Fetch): Suffix dal client: m
+[25-May-2025 19:19:19 UTC] CapricEngine PHP (GitHub Fetch): URL GitHub costruito per il fetch: https://raw.githubusercontent.com/szaza/guitar-chords-db-json/master/chords/C%23/m.json
+[25-May-2025 19:19:19 UTC] ---------------------------------------------------------
+[25-May-2025 19:19:19 UTC] CapricEngine PHP (GitHub Fetch): Richiesta ricevuta.
+[25-May-2025 19:19:19 UTC] CapricEngine PHP (GitHub Fetch): Key dal client: F#
+[25-May-2025 19:19:19 UTC] CapricEngine PHP (GitHub Fetch): Suffix dal client: m
+[25-May-2025 19:19:19 UTC] CapricEngine PHP (GitHub Fetch): URL GitHub costruito per il fetch: https://raw.githubusercontent.com/szaza/guitar-chords-db-json/master/chords/F%23/m.json
+[25-May-2025 19:19:19 UTC] ---------------------------------------------------------
+[25-May-2025 19:19:19 UTC] CapricEngine PHP (GitHub Fetch): Richiesta ricevuta.
+[25-May-2025 19:19:19 UTC] CapricEngine PHP (GitHub Fetch): Key dal client: B
+[25-May-2025 19:19:19 UTC] CapricEngine PHP (GitHub Fetch): Suffix dal client: 
+[25-May-2025 19:19:19 UTC] CapricEngine PHP (GitHub Fetch): URL GitHub costruito per il fetch: https://raw.githubusercontent.com/szaza/guitar-chords-db-json/master/chords/B/maj.json
+[25-May-2025 19:19:19 UTC] ---------------------------------------------------------
+[25-May-2025 19:19:19 UTC] CapricEngine PHP (GitHub Fetch): Richiesta ricevuta.
+[25-May-2025 19:19:19 UTC] CapricEngine PHP (GitHub Fetch): Key dal client: C#
+[25-May-2025 19:19:19 UTC] CapricEngine PHP (GitHub Fetch): Suffix dal client: m7
+[25-May-2025 19:19:19 UTC] CapricEngine PHP (GitHub Fetch): URL GitHub costruito per il fetch: https://raw.githubusercontent.com/szaza/guitar-chords-db-json/master/chords/C%23/m7.json
+[25-May-2025 19:19:19 UTC] CapricEngine PHP (GitHub Fetch) ERRORE: Fallito fetch da GitHub. URL: https://raw.githubusercontent.com/szaza/guitar-chords-db-json/master/chords/F%23/m.json | HTTP Code: 404 | cURL ErrorNo: 0 | cURL ErrorMsg: 
+[25-May-2025 19:19:19 UTC] CapricEngine PHP (GitHub Fetch) ERRORE: Fallito fetch da GitHub. URL: https://raw.githubusercontent.com/szaza/guitar-chords-db-json/master/chords/C%23/m.json | HTTP Code: 404 | cURL ErrorNo: 0 | cURL ErrorMsg: 
+[25-May-2025 19:19:19 UTC] ---------------------------------------------------------
+[25-May-2025 19:19:19 UTC] CapricEngine PHP (GitHub Fetch): Richiesta ricevuta.
+[25-May-2025 19:19:19 UTC] CapricEngine PHP (GitHub Fetch): Key dal client: F#
+[25-May-2025 19:19:19 UTC] CapricEngine PHP (GitHub Fetch): Suffix dal client: m7
+[25-May-2025 19:19:19 UTC] CapricEngine PHP (GitHub Fetch): URL GitHub costruito per il fetch: https://raw.githubusercontent.com/szaza/guitar-chords-db-json/master/chords/F%23/m7.json
+[25-May-2025 19:19:19 UTC] ---------------------------------------------------------
+[25-May-2025 19:19:19 UTC] CapricEngine PHP (GitHub Fetch): Richiesta ricevuta.
+[25-May-2025 19:19:19 UTC] CapricEngine PHP (GitHub Fetch): Key dal client: B
+[25-May-2025 19:19:19 UTC] CapricEngine PHP (GitHub Fetch): Suffix dal client: 7
+[25-May-2025 19:19:19 UTC] CapricEngine PHP (GitHub Fetch): URL GitHub costruito per il fetch: https://raw.githubusercontent.com/szaza/guitar-chords-db-json/master/chords/B/7.json
+[25-May-2025 19:19:19 UTC] CapricEngine PHP (GitHub Fetch) ERRORE: Fallito fetch da GitHub. URL: https://raw.githubusercontent.com/szaza/guitar-chords-db-json/master/chords/C%23/m7.json | HTTP Code: 404 | cURL ErrorNo: 0 | cURL ErrorMsg: 
+[25-May-2025 19:19:19 UTC] CapricEngine PHP (GitHub Fetch) ERRORE: Fallito fetch da GitHub. URL: https://raw.githubusercontent.com/szaza/guitar-chords-db-json/master/chords/B/maj.json | HTTP Code: 404 | cURL ErrorNo: 0 | cURL ErrorMsg: 
+[25-May-2025 19:19:19 UTC] ---------------------------------------------------------
+[25-May-2025 19:19:19 UTC] CapricEngine PHP (GitHub Fetch): Richiesta ricevuta.
+[25-May-2025 19:19:19 UTC] CapricEngine PHP (GitHub Fetch): Key dal client: A
+[25-May-2025 19:19:19 UTC] CapricEngine PHP (GitHub Fetch): Suffix dal client: 
+[25-May-2025 19:19:19 UTC] CapricEngine PHP (GitHub Fetch): URL GitHub costruito per il fetch: https://raw.githubusercontent.com/szaza/guitar-chords-db-json/master/chords/A/maj.json
+[25-May-2025 19:19:19 UTC] ---------------------------------------------------------
+[25-May-2025 19:19:19 UTC] CapricEngine PHP (GitHub Fetch): Richiesta ricevuta.
+[25-May-2025 19:19:19 UTC] CapricEngine PHP (GitHub Fetch): Key dal client: E
+[25-May-2025 19:19:19 UTC] CapricEngine PHP (GitHub Fetch): Suffix dal client: 
+[25-May-2025 19:19:19 UTC] CapricEngine PHP (GitHub Fetch): URL GitHub costruito per il fetch: https://raw.githubusercontent.com/szaza/guitar-chords-db-json/master/chords/E/maj.json
+[25-May-2025 19:19:19 UTC] CapricEngine PHP (GitHub Fetch) ERRORE: Fallito fetch da GitHub. URL: https://raw.githubusercontent.com/szaza/guitar-chords-db-json/master/chords/B/7.json | HTTP Code: 404 | cURL ErrorNo: 0 | cURL ErrorMsg: 
+[25-May-2025 19:19:19 UTC] CapricEngine PHP (GitHub Fetch) ERRORE: Fallito fetch da GitHub. URL: https://raw.githubusercontent.com/szaza/guitar-chords-db-json/master/chords/F%23/m7.json | HTTP Code: 404 | cURL ErrorNo: 0 | cURL ErrorMsg: 
+[25-May-2025 19:19:19 UTC] CapricEngine PHP (GitHub Fetch) ERRORE: Fallito fetch da GitHub. URL: https://raw.githubusercontent.com/szaza/guitar-chords-db-json/master/chords/E/maj.json | HTTP Code: 404 | cURL ErrorNo: 0 | cURL ErrorMsg: 
+[25-May-2025 19:19:19 UTC] CapricEngine PHP (GitHub Fetch) ERRORE: Fallito fetch da GitHub. URL: https://raw.githubusercontent.com/szaza/guitar-chords-db-json/master/chords/A/maj.json | HTTP Code: 404 | cURL ErrorNo: 0 | cURL ErrorMsg: 
+[25-May-2025 19:20:06 UTC] ---------------------------------------------------------
+[25-May-2025 19:20:06 UTC] CapricEngine PHP (GitHub Fetch): Richiesta ricevuta.
+[25-May-2025 19:20:06 UTC] CapricEngine PHP (GitHub Fetch): Key dal client: C
+[25-May-2025 19:20:06 UTC] CapricEngine PHP (GitHub Fetch): Suffix dal client: maj
+[25-May-2025 19:20:06 UTC] CapricEngine PHP (GitHub Fetch): URL GitHub costruito per il fetch: https://raw.githubusercontent.com/szaza/guitar-chords-db-json/master/chords/C/maj.json
+[25-May-2025 19:20:07 UTC] CapricEngine PHP (GitHub Fetch) ERRORE: Fallito fetch da GitHub. URL: https://raw.githubusercontent.com/szaza/guitar-chords-db-json/master/chords/C/maj.json | HTTP Code: 404 | cURL ErrorNo: 0 | cURL ErrorMsg: 
