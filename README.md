@@ -2,6 +2,8 @@ Report sullo Stato di Avanzamento e Modifiche di CapricEngine
 Data: 13 Luglio 2025
 
 ‧       rhythm-patterns.json / rhythm-patterns.js: Definizione e loader di pattern ritmici generici (strumming, arpeggi).
+       config-music-data.js: Contiene costanti e dati musicali statici (TICKS_PER_QUARTER_NOTE_REFERENCE, NOTE_NAMES, allNotesWithFlats, QUALITY_DEFS, scales, MOOD_SONG_STRUCTURES, SECTION_DURATION_GUIDELINES, SECTION_CHORD_TARGETS, TIME_SIGNATURES_BY_MOOD, bpmRanges, moodToStyleNotes) e carica le template da song-structures.json tramite loadSongStructures()
+       song-structures.json: Elenco delle "structure template" selezionabili dall'UI.
 
 
 Versione di Riferimento: Modifiche incrementali rispetto alla v1.55 (basata sui file iniziali forniti).
