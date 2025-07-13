@@ -268,6 +268,9 @@ async function generateSongArchitecture() {
         const tempoFeeling = document.getElementById('tempo_feeling').value;
         const selectedKeyOptionValue = document.getElementById('keySelection').value;
         const forcedTimeSignatureValue = document.getElementById('forceTimeSignature').value;
+        const selectedStructureTemplate = document.getElementById('songStructure') ? document.getElementById('songStructure').value : 'random';
+
+
 
         let selectedKey;
         if (selectedKeyOptionValue === "random") {
@@ -282,12 +285,19 @@ async function generateSongArchitecture() {
             if (generateButton) { generateButton.disabled = false; generateButton.textContent = 'Generate';} return;
         }
 
-        const bpm = generateBPM(tempoFeeling);
+               const bpm = generateBPM(tempoFeeling);
 
-        const moodStructKey = mood in MOOD_SONG_STRUCTURES ? mood : "very_normal_person";
-        let songStructureDefinition = getRandomElement(MOOD_SONG_STRUCTURES[moodStructKey]);
-        if (!songStructureDefinition || songStructureDefinition.length === 0) {
-            songStructureDefinition = MOOD_SONG_STRUCTURES["very_normal_person"][0];
+        let songStructureDefinition = null;
+        if (selectedStructureTemplate && selectedStructureTemplate !== 'random' && typeof getSongStructure === 'function') {
+            songStructureDefinition = getSongStructure(selectedStructureTemplate);
+        }
+
+        if (!songStructureDefinition) {
+            const moodStructKey = mood in MOOD_SONG_STRUCTURES ? mood : "very_normal_person";
+            songStructureDefinition = getRandomElement(MOOD_SONG_STRUCTURES[moodStructKey]);
+            if (!songStructureDefinition || songStructureDefinition.length === 0) {
+                songStructureDefinition = getSongStructure();
+            }
         }
 
         let timeSignatureChanges = [];
