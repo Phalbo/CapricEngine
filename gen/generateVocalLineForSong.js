@@ -4,6 +4,10 @@
 
 require('../lib/config-music-data.js');
 
+if (typeof require !== 'undefined') {
+    require('../lib/config-music-data.js');
+}
+
 // const TICKS_PER_QUARTER_NOTE_REFERENCE_VOCAL = 128; // Usa la costante globale TICKS_PER_QUARTER_NOTE_REFERENCE
 const MIN_VOCAL_MIDI_PITCH_VOCAL = 53; // F3
 const MAX_VOCAL_MIDI_PITCH_VOCAL = 81; // A5
