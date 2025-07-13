@@ -1,4 +1,4 @@
-// File: main/app-midi-export.js
+// File: main/app-midi-export.js - v1.34
 // Gestisce l'esportazione MIDI e il salvataggio dei dati testuali.
 // Modificato per utilizzare detailedHarmonicEvents e per la nuova logica dei pulsanti.
 // Aggiunta rimozione sovrapposizioni in handleGenerateChordRhythm.
