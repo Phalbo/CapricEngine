@@ -2,6 +2,8 @@
 // Genera una traccia melodica "Fake Inspiration" per la canzone.
 // Modificato per utilizzare section.mainChordSlots per durate accurate degli accordi.
 
+require('../lib/config-music-data.js');
+
 // Parametri di generazione melodia (possono essere esposti o ulteriormente configurati)
 const MELODY_GENERATION_PARAMS = {
     octaveBase: 4, // C4 come riferimento per l'ottava
