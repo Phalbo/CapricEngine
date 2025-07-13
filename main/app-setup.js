@@ -1,4 +1,4 @@
-// File: app-setup.js
+// File: app-setup.js - v1.34
 // Responsabile dell'impostazione iniziale, creazione UI dinamica, listeners principali.
 
 let currentSongDataForSave = null;

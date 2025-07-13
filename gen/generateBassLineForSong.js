@@ -1,5 +1,5 @@
 // File: gen/generateBassLineForSong.js
-// CapricEngine - Bass Line Generator
+// CapricEngine - Bass Line Generator - v1.34
 // Modificato per utilizzare section.mainChordSlots per durate accurate degli accordi,
 // per migliorare il riempimento degli slot temporali, e con log di debug aggiunti.
 
