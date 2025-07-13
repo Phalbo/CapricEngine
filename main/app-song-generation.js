@@ -74,8 +74,9 @@ function generateChordsForSection(
         return [fallbackChord];
     }
 
-    const keyRoot = keyInfo.root;
+  const keyRoot = keyInfo.root;
     const cleanSectionNameForStyle = getCleanSectionName(sectionName);
+    const sectionCacheKey = getCleanSectionName(sectionName);
 
     let currentModeForDiatonicGeneration = keyInfo.mode;
     const originalScaleData = scales[keyInfo.mode];
