@@ -1,5 +1,5 @@
 // File: gen/generateBassLineForSong.js
-// CapricEngine - Bass Line Generator
+// CapricEngine - Bass Line Generator - v1.34
 // Modificato per utilizzare section.mainChordSlots per durate accurate degli accordi,
 // per migliorare il riempimento degli slot temporali, e con log di debug aggiunti.
 
@@ -138,8 +138,19 @@ function selectBassNote(
         }
         targetPitch = candidates.length > 0 ? passedGetRandomElementFunc(candidates.filter(p => p !== null)) : rootMidi;
     }
-    const finalPitch = ensureMidiPitchInRange(targetPitch, lastMidiPitch, passedGetRandomElementFunc, scaleNotesMidiInRangeFiltered);
-    // if (finalPitch === null) console.warn("BASS selectBassNote: returning null pitch for chord", chordToneNames.join(", "));
+
+    let finalPitch = ensureMidiPitchInRange(targetPitch, lastMidiPitch, passedGetRandomElementFunc, scaleNotesMidiInRangeFiltered);
+
+    // Aggiunto un fallback finale per garantire che non venga mai restituito null.
+    if (finalPitch === null) {
+        const rootMidi = convertBassNoteToMidi_v2(rootNoteName, NOTE_NAMES_CONST_REF, ALL_NOTES_WITH_FLATS_REF, preferredOctaveForBass);
+        finalPitch = ensureMidiPitchInRange(rootMidi, lastMidiPitch, passedGetRandomElementFunc, scaleNotesMidiInRangeFiltered);
+        if (finalPitch === null) {
+            // Se anche la radice fallisce, usiamo una nota di fallback sicura.
+            finalPitch = MIN_BASS_MIDI_BASSLINE;
+        }
+    }
+
     return finalPitch;
 }
 
@@ -314,7 +325,10 @@ function applyRhythmicPatternToSlot(
         } else {
             // Fallback: se non è stata generata una nota, suona la fondamentale per il resto dello slot
             // o per un beat, per evitare il silenzio.
-            const fallbackDuration = Math.max(minSensibleNoteDuration, Math.min(remainingTicks, ticksPerBeat));
+// Fallback: se non è stata generata una nota, suona la fondamentale per il resto dello slot
+// o per un beat, per evitare il silenzio.
+const fallbackDuration = Math.max(minSensibleNoteDuration, Math.min(remainingTicks, ticksPerBeat));
+
             const fallbackPitch = ensureMidiPitchInRange(
                 rootMidiForOctave,
                 lastEventPitchInSlot,

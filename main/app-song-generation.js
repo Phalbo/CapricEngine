@@ -1,4 +1,4 @@
-// File: main/app-song-generation.js
+// File: main/app-song-generation.js - v1.34
 // Contiene la logica principale per la generazione della struttura della canzone,
 // degli accordi base, l'arrangiamento ritmico-armonico per sezione,
 // e la preparazione dei 'mainChordSlots' per i generatori melodici.
@@ -261,14 +261,7 @@ async function generateSongArchitecture() {
         if(btn) btn.style.display = 'none';
     });
 
-    let capriceNumber = 'X';
-    try {
-        const response = await fetch('counter.php');
-        if (response.ok) {
-            const data = await response.json();
-            if (data.nextCapriceNumber) capriceNumber = data.nextCapriceNumber;
-        }
-    } catch (error) { console.error("Errore nel fetch del contatore:", error); }
+    let capriceNumber = Math.floor(Math.random() * 999) + 1;
 
     try {
         const mood = document.getElementById('mood').value;
