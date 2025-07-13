@@ -143,13 +143,18 @@ function buildSongDataForTextFile() {
         }
     });
 
-    uniqueChordsForGlossary.forEach(chordName => {
+      uniqueChordsForGlossary.forEach(chordName => {
         if (glossaryChordData[chordName] && Object.hasOwnProperty.call(glossaryChordData, chordName)) {
             chordsInGlossary++;
             const data = glossaryChordData[chordName];
             songDataText += `\n${data.fundamentalDisplayName}:\n  Quality: ${data.fundamentalQuality}\n  Notes (root pos.): ${data.fundamentalNotes.join(" ")}\n`;
-            const firstShape = data.shapes && data.shapes.length > 0 ? data.shapes[0] : null;
-            if(firstShape && firstShape.guitarFrets){songDataText += `  Guitar (fingering '${firstShape.displayName}'): ${firstShape.guitarFrets.join('-')}\n`;}
+            const shapeIndex = (typeof data.currentShapeIndex === 'number' && data.shapes && data.shapes.length > 0)
+                ? Math.min(Math.max(data.currentShapeIndex, 0), data.shapes.length - 1)
+                : 0;
+            const chosenShape = data.shapes && data.shapes.length > 0 ? data.shapes[shapeIndex] : null;
+            if(chosenShape && chosenShape.guitarFrets){
+                songDataText += `  Guitar (fingering '${chosenShape.displayName}'): ${chosenShape.guitarFrets.join('-')}\n`;
+            }
         } else if (CHORD_LIB && CHORD_LIB[chordName]) { // Prendi info da CHORD_LIB se non nel glossaryChordData specifico
             chordsInGlossary++;
             const data = CHORD_LIB[chordName];
