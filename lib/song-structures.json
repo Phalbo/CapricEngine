@@ -1,0 +1,9 @@
+{
+  "vnp_0": ["Intro", "Verse", "Chorus", "Verse", "Chorus", "Bridge", "Chorus"],
+  "vnp_1": ["Verse", "Chorus", "Verse", "Chorus", "Middle 8", "Chorus", "Outro"],
+  "mi_0": ["Intro", "Verse", "Verse", "Chorus", "Verse", "Chorus", "Outro"],
+  "an_0": ["Intro", "Verse", "Chorus", "Breakdown", "Chorus", "Outro"],
+  "et_0": ["Intro", "Verse", "Chorus", "Ambient Interlude", "Chorus", "Outro"],
+  "ar_0": ["Intro", "Verse", "Chorus", "Verse", "Chorus", "Breakdown", "Final Chorus"],
+  "sp_0": ["Intro", "Texture", "Verse", "Fragment", "Chorus", "Outro"]
+}
