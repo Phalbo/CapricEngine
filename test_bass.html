@@ -12,12 +12,16 @@
   <script src="lib/theory-helpers.js"></script>
   <script src="lib/harmonic-patterns-config.js"></script>
   <script src="lib/passing-chords-config.js"></script>
+
   <script src="lib/vocal_profiles.js"></script>
+
   <script src="lib/chord-renderer.js"></script>
   <script src="lib/scale-renderer.js"></script>
   <script src="lib/drum-patterns-library.js"></script>
   <script src="lib/chord-rhythm-generator.js"></script>
+
   <script src="gen/generateBassLineForSong_v2.js"></script>
+
   <script>
     document.getElementById('generateButton').addEventListener('click', () => {
       const songMidiData = {
@@ -45,7 +49,10 @@
       const passedGetRandomElementFunc = (arr) => arr[Math.floor(Math.random() * arr.length)];
       const passedGetChordRootAndTypeFunc = (chord) => ({ root: chord });
 
+
       const bassLine = generateBassLineForSong_v2(
+
+
         songMidiData,
         mainScaleNotesNames,
         rootNoteOfScale,

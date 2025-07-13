@@ -1,4 +1,4 @@
-// File: main/app-midi-export.js
+// File: main/app-midi-export.js - v1.34
 // Gestisce l'esportazione MIDI e il salvataggio dei dati testuali.
 // Modificato per utilizzare detailedHarmonicEvents e per la nuova logica dei pulsanti.
 // Aggiunta rimozione sovrapposizioni in handleGenerateChordRhythm.
@@ -476,7 +476,7 @@ function handleGenerateBassLine() {
     if (bassBtn) { bassBtn.disabled = true; bassBtn.textContent = "Creating Bass Line..."; }
     try {
         const options = { globalRandomActivationProbability: 0.5 };
-        const bassLine = generateBassLineForSong(
+        const bassLine = generateBassLineForSong_v2(
             currentMidiData, currentMidiData.mainScaleNotes, currentMidiData.mainScaleRoot,
             CHORD_LIB, scales, NOTE_NAMES, allNotesWithFlats,
             getChordNotes, getNoteName, getRandomElement, getChordRootAndType,
