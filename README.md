@@ -1,5 +1,9 @@
 Report sullo Stato di Avanzamento e Modifiche di CapricEngine
-Data: 2 Giugno 2025
+Data: 13 Luglio 2025
+
+‧       rhythm-patterns.json / rhythm-patterns.js: Definizione e loader di pattern ritmici generici (strumming, arpeggi).
+
+
 Versione di Riferimento: Modifiche incrementali rispetto alla v1.55 (basata sui file iniziali forniti).
 1. Modifiche Funzionali Implementate con Successo:
 •	1.1. Randomizzazione della Diteggiatura Iniziale nel Glossario Accordi (UI):
