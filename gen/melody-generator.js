@@ -7,19 +7,23 @@ if (typeof require !== 'undefined') {
     require('../lib/config-music-data.js');
 }
 
+const TPQN_MELODY =
+    typeof TICKS_PER_QUARTER_NOTE_REFERENCE !== 'undefined'
+        ? TICKS_PER_QUARTER_NOTE_REFERENCE
+        : 128;
+
 // Parametri di generazione melodia (possono essere esposti o ulteriormente configurati)
 const MELODY_GENERATION_PARAMS = {
     octaveBase: 4, // C4 come riferimento per l'ottava
     octaveRange: 1.5, // Escursione melodica in ottave
-    shortNoteDurationTicks: TICKS_PER_QUARTER_NOTE_REFERENCE / 2, // Croma
-    mediumNoteDurationTicks: TICKS_PER_QUARTER_NOTE_REFERENCE,   // Semiminima
-    longNoteDurationTicks: TICKS_PER_QUARTER_NOTE_REFERENCE * 2, // Minima
+    shortNoteDurationTicks: TPQN_MELODY / 2, // Croma
+    mediumNoteDurationTicks: TPQN_MELODY,   // Semiminima
+    longNoteDurationTicks: TPQN_MELODY * 2, // Minima
     restProbability: 0.05, // Probabilità di inserire una pausa (ridotta)
     noteDensity: 0.8, // Fattore di densità delle note (0-1, aumentato)
     maxStepInterval: 4, // Massimo intervallo (in semitoni) per salti melodici comuni
     leapProbability: 0.2, // Probabilità di un salto melodico più ampio
-    rhythmicVarietyPatterns: [ // Durate in multipli di croma (TICKS_PER_QUARTER_NOTE_REFERENCE / 2)
-        [2],       // Semiminima
+    rhythmicVarietyPatterns: [ // Durate in multipli di croma (TPQN_MELODY / 2)        [2],       // Semiminima
         [1, 1],    // Due crome
         [3, 1],    // Semiminima puntata + Croma
         [1, 3],    // Croma + Semiminima puntata
