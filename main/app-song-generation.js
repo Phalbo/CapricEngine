@@ -74,7 +74,7 @@ function generateChordsForSection(
         return [fallbackChord];
     }
 
-  const keyRoot = keyInfo.root;
+    const keyRoot = keyInfo.root;
     const cleanSectionNameForStyle = getCleanSectionName(sectionName);
     const sectionCacheKey = getCleanSectionName(sectionName);
 
