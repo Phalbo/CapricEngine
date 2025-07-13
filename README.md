@@ -33,7 +33,7 @@ o	Stato: Non Risolto. Le modifiche apportate non hanno prodotto il miglioramento
 •	3.2. Scarsità di Note nelle Linee Vocali:
 o	Descrizione: Simile al basso, ci si aspetta che le linee vocali generate da generateVocalLineForSong.js (file non direttamente analizzato per il suo contenuto ma per i suoi profili in lib/vocal_profiles.js) possano soffrire di eccessivi silenzi.
 o	Stato: Non Affrontato in modo approfondito. Le strategie di intervento proposte (modifica dei profili o della logica del generatore) non sono state ancora implementate.
-•	3.3. Mancata Corrispondenza Diteggiature tra UI e File di Testo:
+•	3.3. RISOLTO: Mancata Corrispondenza Diteggiature tra UI e File di Testo:
 o	Descrizione: Il file di testo generato dalla funzione buildSongDataForTextFile (in main/app-midi-export.js) continua a mostrare la prima diteggiatura ("Pos 1") per ogni accordo nel glossario, invece di riflettere la diteggiatura scelta casualmente e visualizzata correttamente nell'interfaccia utente.
 o	Causa Probabile: Problema di timing o di accesso/disponibilità dei dati randomizzati in window.glossaryChordData al momento dell'esecuzione di buildSongDataForTextFile. La logica di fallback a CHORD_LIB (che contiene solo la prima diteggiatura come default) viene probabilmente attivata.
 o	Stato: Non Risolto. Le modifiche per rendere renderSongOutput e generateSongArchitecture asincrone e per attendere il completamento del caricamento del glossario prima di abilitare i pulsanti (inclusa la modifica per leggere l'indice randomizzato) non hanno ancora sortito l'effetto desiderato sul file di testo.
