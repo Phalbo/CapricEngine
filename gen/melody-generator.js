@@ -9,8 +9,8 @@ const MELODY_GENERATION_PARAMS = {
     shortNoteDurationTicks: TICKS_PER_QUARTER_NOTE_REFERENCE / 2, // Croma
     mediumNoteDurationTicks: TICKS_PER_QUARTER_NOTE_REFERENCE,   // Semiminima
     longNoteDurationTicks: TICKS_PER_QUARTER_NOTE_REFERENCE * 2, // Minima
-    restProbability: 0.15, // Probabilità di inserire una pausa
-    noteDensity: 0.6, // Fattore di densità delle note (0-1)
+    restProbability: 0.05, // Probabilità di inserire una pausa (ridotta)
+    noteDensity: 0.8, // Fattore di densità delle note (0-1, aumentato)
     maxStepInterval: 4, // Massimo intervallo (in semitoni) per salti melodici comuni
     leapProbability: 0.2, // Probabilità di un salto melodico più ampio
     rhythmicVarietyPatterns: [ // Durate in multipli di croma (TICKS_PER_QUARTER_NOTE_REFERENCE / 2)
@@ -95,12 +95,21 @@ function generateMelodyForSong(songMidiData, mainScaleNotes, mainScaleRoot, CHOR
             const maxAttemptsPerSlot = slotDurationTicks / MELODY_GENERATION_PARAMS.shortNoteDurationTicks * 2;
 
 
-            while (currentTickInSlot < slotDurationTicks && attemptsInSlot < maxAttemptsPerSlot) {
+          while (currentTickInSlot < slotDurationTicks && attemptsInSlot < maxAttemptsPerSlot) {
                 attemptsInSlot++;
+
                 if (Math.random() < MELODY_GENERATION_PARAMS.restProbability && currentTickInSlot > 0) {
-                    // Inserisci una pausa
-                    const restDuration = getRandomElement_GLOBAL([MELODY_GENERATION_PARAMS.shortNoteDurationTicks, MELODY_GENERATION_PARAMS.mediumNoteDurationTicks]);
-                    currentTickInSlot += Math.min(restDuration, slotDurationTicks - currentTickInSlot);
+                    // Inserisci una pausa ma evita che consumi l'intero slot
+                    const restChoices = [MELODY_GENERATION_PARAMS.shortNoteDurationTicks, MELODY_GENERATION_PARAMS.mediumNoteDurationTicks];
+                    let restDuration = getRandomElement_GLOBAL(restChoices);
+                    const remainingTicks = slotDurationTicks - currentTickInSlot;
+                    if (restDuration >= remainingTicks) {
+                        // Mantieni qualche tick per una nota finale, a meno di rara eccezione
+                        if (Math.random() > 0.2) {
+                            restDuration = Math.max(0, remainingTicks - MELODY_GENERATION_PARAMS.shortNoteDurationTicks);
+                        }
+                    }
+                    currentTickInSlot += Math.min(restDuration, remainingTicks);
                     if (currentTickInSlot >= slotDurationTicks) break;
                     continue;
                 }
@@ -158,8 +167,26 @@ function generateMelodyForSong(songMidiData, mainScaleNotes, mainScaleRoot, CHOR
                     }
                     tickInRhythmicPattern += actualNoteDuration;
                 }
-                currentTickInSlot += tickInRhythmicPattern;
-                 if (rhythmicPatternTicks.length === 0) currentTickInSlot = slotDurationTicks; // Per uscire dal loop se il pattern è vuoto
+     currentTickInSlot += tickInRhythmicPattern;
+                if (rhythmicPatternTicks.length === 0) currentTickInSlot = slotDurationTicks; // Per uscire dal loop se il pattern è vuoto
+            }
+
+            // Riempie eventuali tick rimanenti nello slot con note brevi
+            while (currentTickInSlot < slotDurationTicks) {
+                const remaining = slotDurationTicks - currentTickInSlot;
+                const noteDur = Math.min(MELODY_GENERATION_PARAMS.shortNoteDurationTicks, remaining);
+                if (noteDur <= 0) break;
+
+                const pitchCandidates = availableNotesForSlot.map(idx => idx + MELODY_GENERATION_PARAMS.octaveBase * 12);
+                const targetPitch = getRandomElement_GLOBAL(pitchCandidates);
+                melodyEvents.push({
+                    pitch: [targetPitch],
+                    duration: `T${Math.round(noteDur)}`,
+                    startTick: slotStartTickAbsolute + currentTickInSlot,
+                    velocity: Math.floor(60 + Math.random() * 20)
+                });
+                lastMelodyNotePitch = targetPitch;
+                currentTickInSlot += noteDur;
             }
         });
     });
