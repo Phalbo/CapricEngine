@@ -85,7 +85,7 @@
     <p>&copy; Phalbo Music Services. </p>
   </footer>
 
-
+<!-- CONFIG -->
 <script src="lib/config-music-data.js"></script>
 <script src="lib/theory-helpers.js"></script>
 <script src="lib/harmonic-patterns-config.js"></script>
@@ -93,21 +93,24 @@
 <script src="lib/vocal_profiles.js"></script>
 <script src="lib/rhythm-patterns.js"></script>
 
+<!-- CORE RENDER + UTILS -->
 <script src="lib/chord-renderer.js"></script>
 <script src="lib/scale-renderer.js"></script>
 <script src="lib/drum-patterns-library.js"></script>
 <script src="lib/chord-rhythm-generator.js"></script>
 
+<!-- GENERATORI (devono venire *dopo* le config e helpers) -->
 <script src="gen/melody-generator.js"></script>
 <script src="gen/generateBassLineForSong.js"></script>
 <script src="gen/generateBassLineForSong_v2.js"></script>
 <script src="gen/generateVocalLineForSong.js"></script>
 <script src="gen/generateDrumTrackForSong.js"></script>
 
-<script src="main/app-setup.js"></script>
+<!-- MAIN LOGIC -->
 <script src="main/app-song-generation.js"></script>
 <script src="main/app-ui-render.js"></script>
 <script src="main/app-midi-export.js"></script>
+<script src="main/app-setup.js"></script>
 
 
 </body>
