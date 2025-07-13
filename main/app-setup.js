@@ -12,7 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const generateButton = document.getElementById('generateButton');
     const songOutputDiv = document.getElementById('songOutput');
     const songOutputContainer = document.getElementById('song-output-container');
-    const keySelectionDropdown = document.getElementById('keySelection');
+  const keySelectionDropdown = document.getElementById('keySelection');
+    const structureDropdown = document.getElementById('songStructure');
 
     // --- Creazione dinamica dei pulsanti di azione ---
     const actionButtonsContainer = document.createElement('div');
@@ -89,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Popolamento dropdown tonalità ---
-    if (keySelectionDropdown && typeof possibleKeysAndModes !== 'undefined' && possibleKeysAndModes.length > 0) {
+   if (keySelectionDropdown && typeof possibleKeysAndModes !== 'undefined' && possibleKeysAndModes.length > 0) {
         possibleKeysAndModes.forEach(keyInfoLoop => {
             const option = document.createElement('option');
             option.value = `${keyInfoLoop.root}_${keyInfoLoop.mode}`;
@@ -100,6 +101,20 @@ document.addEventListener('DOMContentLoaded', () => {
         if (randomOption) randomOption.textContent = "Random";
     }
 
+    if (structureDropdown) {
+        const populateStructures = () => {
+            Object.keys(SONG_STRUCTURE_TEMPLATES).forEach(id => {
+                const opt = document.createElement('option');
+                opt.value = id; opt.textContent = id;
+                structureDropdown.appendChild(opt);
+            });
+        };
+        if (typeof SONG_STRUCTURE_TEMPLATES !== 'undefined' && Object.keys(SONG_STRUCTURE_TEMPLATES).length > 0) {
+            populateStructures();
+        } else if (typeof loadSongStructures === 'function') {
+            loadSongStructures().then(populateStructures).catch(() => {});
+        }
+    }
     // --- Inizializzazione libreria accordi ---
     if (typeof buildChordLibrary === "function") {
         CHORD_LIB = buildChordLibrary();
