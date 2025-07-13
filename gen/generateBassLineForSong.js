@@ -3,8 +3,6 @@
 // Modificato per utilizzare section.mainChordSlots per durate accurate degli accordi,
 // per migliorare il riempimento degli slot temporali, e con log di debug aggiunti.
 
-require('../lib/config-music-data.js');
-
 if (typeof require !== 'undefined') {
     require('../lib/config-music-data.js');
 }
