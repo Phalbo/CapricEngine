@@ -4,7 +4,9 @@ Data: 13 Luglio 2025
 ‧       rhythm-patterns.json / rhythm-patterns.js: Definizione e loader di pattern ritmici generici (strumming, arpeggi).
        config-music-data.js: Contiene costanti e dati musicali statici (TICKS_PER_QUARTER_NOTE_REFERENCE, NOTE_NAMES, allNotesWithFlats, QUALITY_DEFS, scales, MOOD_SONG_STRUCTURES, SECTION_DURATION_GUIDELINES, SECTION_CHORD_TARGETS, TIME_SIGNATURES_BY_MOOD, bpmRanges, moodToStyleNotes) e carica le template da song-structures.json tramite loadSongStructures()
        song-structures.json: Elenco delle "structure template" selezionabili dall'UI.
-
+o	Aggiungere/Modificare Strutture Canzone o Regole Tonalità/Tempo: lib/config-music-data.js (specificamente MOOD_SONG_STRUCTURES, SECTION_DURATION_GUIDELINES, SECTION_CHORD_TARGETS, TIME_SIGNATURES_BY_MOOD, bpmRanges).
+o	Aggiungere/Modificare Strutture Canzone o Regole Tonalità/Tempo: song-structures.json per le template e lib/config-music-data.js per MOOD_SONG_STRUCTURES, SECTION_DURATION_GUIDELINES, SECTION_CHORD_TARGETS, TIME_SIGNATURES_BY_MOOD, bpmRanges.
+o	Modificare Generazione Armonia Base:
 
 Versione di Riferimento: Modifiche incrementali rispetto alla v1.55 (basata sui file iniziali forniti).
 1. Modifiche Funzionali Implementate con Successo:
