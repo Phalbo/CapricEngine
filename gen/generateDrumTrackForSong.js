@@ -38,6 +38,9 @@ function generateDrumTrackForSong(
         console.error("generateDrumTrackForSong: TICKS_PER_QUARTER_NOTE_REFERENCE non definito globalmente! Assicurati che sia definito in config-music-data.js e che config-music-data.js sia caricato prima.");
         throw new Error("generateDrumTrackForSong: TICKS_PER_QUARTER_NOTE_REFERENCE non definito globalmente!");
     }
+    if (typeof RHYTHM_PATTERNS === 'undefined') {
+        console.warn("generateDrumTrackForSong: RHYTHM_PATTERNS non trovate. Assicurati che rhythm-patterns.js sia stato caricato prima di questo script.");
+    }
     const TPQN_DRUMS = TICKS_PER_QUARTER_NOTE_REFERENCE;
 
 
@@ -61,10 +64,25 @@ function generateDrumTrackForSong(
             console.warn("generateDrumTrackForSong: Sezione malformata o senza mainChordSlots, la salto:", section.name);
             return;
         }
-        const sectionTimeSignature = section.timeSignature;
+     const sectionTimeSignature = section.timeSignature;
         const sectionStartTickAbsolute = section.startTick;
         const sectionNameLower = section.name.toLowerCase();
         const sectionMeasures = section.measures;
+
+        // Seleziona eventuali rhythm pattern generali in base a time signature e tipo sezione
+        let chosenGenericRhythm = null;
+        if (typeof RHYTHM_PATTERNS !== 'undefined' && passedGetRandomElementFunc) {
+            const tsKeyGeneric = `${sectionTimeSignature[0]}/${sectionTimeSignature[1]}`;
+            const cleanType = sectionNameLower.includes('chorus') ? 'chorus' :
+                               (sectionNameLower.includes('verse') ? 'verse' :
+                               (sectionNameLower.includes('bridge') ? 'bridge' : 'other'));
+            const allCandidates = (RHYTHM_PATTERNS[tsKeyGeneric] || RHYTHM_PATTERNS['default'] || [])
+                .filter(p => (p.sectionTypes || []).includes(cleanType) || (p.sectionTypes || []).includes('any'));
+            if (allCandidates.length > 0) {
+                chosenGenericRhythm = passedGetRandomElementFunc(allCandidates);
+            }
+        }
+
 
         const currentTicksPerBeat = (4 / sectionTimeSignature[1]) * TPQN_DRUMS;
         const currentTicksPerMeasure = sectionTimeSignature[0] * currentTicksPerBeat;
@@ -99,12 +117,12 @@ function generateDrumTrackForSong(
         }
 
         // *** CORREZIONE DEL METODO DI CLONING PER PRESERVARE LE FUNZIONI 'apply' ***
-        let currentActivePattern = {
-            ...sectionBasePatternForSection,
-            measureEvents: JSON.parse(JSON.stringify(sectionBasePatternForSection.measureEvents || [])),
-            variations: (sectionBasePatternForSection.variations || []).map(v_orig => {
-                if (v_orig && typeof v_orig.apply === 'function') { // Copia solo se la variazione è valida e ha apply
-                    return { ...v_orig }; // Shallow copy dell'oggetto variation; 'apply' è copiato per riferimento.
+        let currentActivePattern = {␊
+            ...sectionBasePatternForSection,␊
+            measureEvents: JSON.parse(JSON.stringify(sectionBasePatternForSection.measureEvents || [])),␊
+            variations: (sectionBasePatternForSection.variations || []).map(v_orig => {␊
+                if (v_orig && typeof v_orig.apply === 'function') { // Copia solo se la variazione è valida e ha apply␊
+                    return { ...v_orig }; // Shallow copy dell'oggetto variation; 'apply' è copiato per riferimento.␊
                 }
                 // console.warn("generateDrumTrackForSong: Oggetto variation malformato o apply non è una funzione in sectionBasePatternForSection:", sectionBasePatternForSection.name, v_orig);
                 return null;
@@ -114,6 +132,10 @@ function generateDrumTrackForSong(
             currentActivePattern.variations = [];
         }
         // *** FINE CORREZIONE CLONING ***
+
+        if (chosenGenericRhythm && chosenGenericRhythm.name) {
+            console.log(`DrumTrack: sezione ${section.name} -> rhythm pattern selezionato: ${chosenGenericRhythm.name}`);
+        }
 
 
         let sectionUseRide = false;
