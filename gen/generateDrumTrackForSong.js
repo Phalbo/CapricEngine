@@ -117,7 +117,8 @@ function generateDrumTrackForSong(
         }
 
         // *** CORREZIONE DEL METODO DI CLONING PER PRESERVARE LE FUNZIONI 'apply' ***
-        let currentActivePattern = {
+     let currentActivePattern = {
+
             ...sectionBasePatternForSection,
             measureEvents: JSON.parse(JSON.stringify(sectionBasePatternForSection.measureEvents || [])),
             variations: (sectionBasePatternForSection.variations || []).map(v_orig => {
