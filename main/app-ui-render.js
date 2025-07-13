@@ -282,13 +282,18 @@ async function renderSongOutput(songData, allGeneratedChordsSet, styleNote, main
                 }
             }
 
+          const randomIndexForShape = chordEntryInLib.shapes.length > 0 ?
+                Math.floor(Math.random() * chordEntryInLib.shapes.length) : 0;
+
             glossaryChordData[fundamentalChordName_normalized] = {
                 fundamentalDisplayName: fundamentalChordName_normalized,
                 fundamentalNotes: chordEntryInLib.notes || [],
                 fundamentalQuality: chordEntryInLib.quality || "Unknown",
                 shapes: [...chordEntryInLib.shapes],
-                currentShapeIndex: 0, 
-                currentShapeKey: chordEntryInLib.shapes.length > 0 ? chordEntryInLib.shapes[0].shapeKey : sanitizeId(`${fundamentalChordName_normalized}_ultimate_fallback_ui`)
+                currentShapeIndex: randomIndexForShape,
+                currentShapeKey: chordEntryInLib.shapes.length > 0 ?
+                    chordEntryInLib.shapes[randomIndexForShape].shapeKey :
+                    sanitizeId(`${fundamentalChordName_normalized}_ultimate_fallback_ui`)
             };
 
             const currentFundamentalData = glossaryChordData[fundamentalChordName_normalized];
