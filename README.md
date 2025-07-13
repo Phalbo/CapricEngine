@@ -1,4 +1,4 @@
-Report sullo Stato di Avanzamento e Modifiche di CapricEngine
+Report sullo Stato di Avanzamento e Modifiche di CapricEngine versione 2.01 
 Data: 13 Luglio 2025
 
 •	currentMidiData (globale in app-song-generation.js, usata da molti moduli): Oggetto centrale contenente tutti i dati della canzone generata (titolo, BPM, timeSignatureChanges, keySignatureRoot, keyModeName, fullKeyName, capriceNum, totalMeasures, mainScaleRoot, mainScaleNotes, e soprattutto sections che a loro volta contengono name, baseChords, measures, timeSignature, startTick, detailedHarmonicEvents, mainChordSlots).
