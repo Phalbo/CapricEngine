@@ -473,7 +473,7 @@ function handleGenerateBassLine() {
     if (!currentMidiData || !currentMidiData.sections || !currentMidiData.mainScaleNotes || currentMidiData.mainScaleNotes.length === 0) {
         alert("Dati canzone, sezioni o scala principale mancanti. Genera prima una struttura completa."); return;
     }
-    if (typeof generateBassLineForSong !== "function") { alert("Errore interno: Funzione generateBassLineForSong non trovata."); return; }
+    if (typeof generateBassLineForSong_v2 !== "function") { alert("Errore interno: Funzione generateBassLineForSong_v2 non trovata."); return; }
     if (typeof TICKS_PER_QUARTER_NOTE_REFERENCE === 'undefined') { console.error("TICKS_PER_QUARTER_NOTE_REFERENCE non definito!"); return; }
 
 
