@@ -5,6 +5,12 @@
 
 require('../lib/config-music-data.js');
 
+if (typeof require !== 'undefined') {
+    require('../lib/config-music-data.js');
+}
+
+
+
 
 function generateDrumTrackForSong(
     songMidiData, // Contiene .sections (con .mainChordSlots), .bpm, .timeSignatureChanges
