@@ -151,6 +151,7 @@ function selectBassNote(
         }
     }
 
+
     return finalPitch;
 }
 
