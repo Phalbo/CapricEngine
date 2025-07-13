@@ -1,6 +1,8 @@
 Report sullo Stato di Avanzamento e Modifiche di CapricEngine
 Data: 13 Luglio 2025
 
+•	currentMidiData (globale in app-song-generation.js, usata da molti moduli): Oggetto centrale contenente tutti i dati della canzone generata (titolo, BPM, timeSignatureChanges, keySignatureRoot, keyModeName, fullKeyName, capriceNum, totalMeasures, mainScaleRoot, mainScaleNotes, e soprattutto sections che a loro volta contengono name, baseChords, measures, timeSignature, startTick, detailedHarmonicEvents, mainChordSlots).
+
 o       3.5.2. Melodia (melody-generator.js): Utilizza mainChordSlots e i parametri in MELODY_GENERATION_PARAMS per generare una linea melodica, considerando le note della scala principale e le note dell'accordo corrente. Il generatore ora riduce la probabilità di pause e riempie eventuali battiti residui con note brevi per coprire l'intero slot.
 ‧       rhythm-patterns.json / rhythm-patterns.js: Definizione e loader di pattern ritmici generici (strumming, arpeggi).
        config-music-data.js: Contiene costanti e dati musicali statici (TICKS_PER_QUARTER_NOTE_REFERENCE, NOTE_NAMES, allNotesWithFlats, QUALITY_DEFS, scales, MOOD_SONG_STRUCTURES, SECTION_DURATION_GUIDELINES, SECTION_CHORD_TARGETS, TIME_SIGNATURES_BY_MOOD, bpmRanges, moodToStyleNotes) e carica le template da song-structures.json tramite loadSongStructures()
