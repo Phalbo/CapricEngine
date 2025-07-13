@@ -476,7 +476,7 @@ function handleGenerateBassLine() {
     if (bassBtn) { bassBtn.disabled = true; bassBtn.textContent = "Creating Bass Line..."; }
     try {
         const options = { globalRandomActivationProbability: 0.5 };
-        const bassLine = generateBassLineForSong(
+        const bassLine = generateBassLineForSong_v2(
             currentMidiData, currentMidiData.mainScaleNotes, currentMidiData.mainScaleRoot,
             CHORD_LIB, scales, NOTE_NAMES, allNotesWithFlats,
             getChordNotes, getNoteName, getRandomElement, getChordRootAndType,
