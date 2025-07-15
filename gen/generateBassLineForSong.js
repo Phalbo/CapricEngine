@@ -79,8 +79,6 @@ function generateBassPhraseForSlot(context, lastEvent) {
                     slotIndex
 
                 }, { getChordRootAndType, getChordNotes, getScaleNotes, getRandomElement });
-
-
                 phraseEvents.push({
                     pitch: [pitch],
                     duration: `T${durationInTicks}`,
@@ -95,7 +93,7 @@ function generateBassPhraseForSlot(context, lastEvent) {
     return phraseEvents;
 }
 
-function generateBassLineForSong(songData) {
+function generateBassLineForSong(songData, helpers) {
     const bassLine = [];
     let lastEvent = null;
 
@@ -110,7 +108,8 @@ function generateBassLineForSong(songData) {
                 sectionIndex,
                 slotIndex
             };
-            const phrase = generateBassPhraseForSlot(context, lastEvent);
+
+            const phrase = generateBassPhraseForSlot(context, lastEvent, helpers);
             if (phrase.length > 0) {
                 lastEvent = phrase[phrase.length - 1];
             }

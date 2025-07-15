@@ -448,8 +448,13 @@ function handleGenerateBassLine() {
     if (bassBtn) { bassBtn.disabled = true; bassBtn.textContent = "Creating Bass Line..."; }
     try {
 
-        const bassLine = generateBassLineForSong(currentMidiData);
-
+        const helpers = {
+            getChordRootAndType,
+            getChordNotes,
+            getScaleNotes,
+            getRandomElement
+        };
+        const bassLine = generateBassLineForSong(currentMidiData, helpers);
         if (bassLine && bassLine.length > 0) {
             const fileName = `Phalbo_Caprice_bass_n${currentMidiData.capriceNum || 'X'}.mid`;
             downloadSingleTrackMidi(
