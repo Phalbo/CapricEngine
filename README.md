@@ -1,4 +1,6 @@
+
 # CapricEngine v2.12
+
 
 CapricEngine is a web-based application that procedurally generates musical compositions. It allows users to select a mood, tempo, and key, and then generates a complete song structure with chords, a bassline, a melody, and a drum track. The application is built with HTML, CSS, and JavaScript, and uses the `midiwriter.js` library to export the generated music as MIDI files.
 
@@ -14,6 +16,7 @@ The application is divided into several modules, each responsible for a specific
 *   **`main/app-setup.js`**: This module initializes the application, sets up the user interface, and attaches event listeners to the various controls.
 
 ### Generator Modules
+
 
 *   **`gen/generateBassLineForSong.js`**: This module generates the bassline for the song. It uses a sophisticated algorithm to create a bassline that is both rhythmically and harmonically interesting.
 *   **`gen/bass-pitch-selector.js`**: This module contains the logic for selecting the pitches for the bassline. It uses a weighted random selection process to choose notes that are harmonically appropriate and create a smooth bassline.
@@ -68,3 +71,4 @@ Here is a list of potential improvements and new features for future versions of
 *   **In-Browser MIDI Preview:** Allow users to preview the generated tracks in the browser using the Web Audio API and a SoundFont or a library like `tone.js`.
 *   **MusicXML Export:** Consider adding the ability to export the generated music as MusicXML files, which can be imported into a wide range of notation software.
 *   **Custom Presets:** Allow users to save their own custom patterns and presets for future use.
+
