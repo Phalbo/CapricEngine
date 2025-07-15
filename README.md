@@ -15,7 +15,6 @@ The application is divided into several modules, each responsible for a specific
 
 ### Generator Modules
 
-
 *   **`gen/generateBassLineForSong.js`**: This module generates the bassline for the song. It uses a sophisticated algorithm to create a bassline that is both rhythmically and harmonically interesting.
 *   **`gen/bass-pitch-selector.js`**: This module contains the logic for selecting the pitches for the bassline. It uses a weighted random selection process to choose notes that are harmonically appropriate and create a smooth bassline.
 *   **`gen/melody-generator.js`**: This module generates the melody for the song.
@@ -38,3 +37,4 @@ The song generation process is initiated when the user clicks the "Generate" but
 4.  The `mainChordSlots` are created, which are time-based slots that contain a single chord.
 5.  The `renderSongOutput` function in `main/app-ui-render.js` is called to display the generated song data in the user interface.
 6.  The user can then click the buttons for the individual tracks to generate and download the MIDI files. Each of these buttons calls a handler function in `main/app-midi-export.js`, which in turn calls the appropriate generator function.
+

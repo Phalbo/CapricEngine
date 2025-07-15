@@ -2,11 +2,11 @@
 
 function selectBassPitch(params, helpers) {
     const { getChordRootAndType, getChordNotes, getScaleNotes, getRandomElement } = helpers;
-    const { chord, isFirstBeat, lastNote, songData } = params;
+    const { chord, isFirstBeat, lastNote, songData, forceRootOnDownbeat } = params;
     const { root, type } = getChordRootAndType(chord.chordName);
     const chordNotes = getChordNotes(root, type);
 
-    if (isFirstBeat) {
+    if (isFirstBeat && forceRootOnDownbeat) {
         let pitch = NOTE_NAMES.indexOf(root);
         if (Math.random() < BASS_PARAMS.OCTAVE_JUMP_CHANCE) {
             pitch += 12;
@@ -60,7 +60,6 @@ function selectBassPitch(params, helpers) {
     while (pitch < 36) {
         pitch += 12;
     }
-
 
     return pitch;
 }
