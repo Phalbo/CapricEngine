@@ -1,6 +1,6 @@
 // File: main/app-midi-export.js - v1.34
 // Gestisce l'esportazione MIDI e il salvataggio dei dati testuali.
-// Modificato per utilizzare detailedHarmonicEvents e per la nuova logica dei pulsanti.
+// Modificato per utilizzare detailedHarmonicEvents e per la new logica dei pulsanti.
 // Aggiunta rimozione sovrapposizioni in handleGenerateChordRhythm.
 
 /**
@@ -68,7 +68,7 @@ function buildSongDataForTextFile() {
                     measureOutput = `Bar ${currentMeasureNumber}: `;
                     ticksWithinCurrentMeasureRendered = 0;
                 }
-                
+
                 // Calcola l'offset dell'evento all'interno della sua battuta logica
                 const eventOffsetInItsMeasure = eventStartTickInSection % ticksPerMeasureInSection;
 
@@ -85,7 +85,7 @@ function buildSongDataForTextFile() {
                 } else if (durationString.endsWith('0') && durationString.includes('.')) {
                     durationString = durationString.substring(0, durationString.length - 1);
                 }
-                
+
                 let chordDisplayName = event.chordName;
                 if (event.isPassing) chordDisplayName += " (pass)";
                 if (event.isHit) chordDisplayName += " (hit)";
@@ -205,9 +205,6 @@ function downloadSingleTrackMidi(trackName, midiEvents, fileName, bpm, timeSigna
         alert("Errore interno: libreria MIDI mancante.");
         return;
     }
-    if (typeof recalculateTimeSignatureChangesAndSectionTicks === "function") {
-        recalculateTimeSignatureChangesAndSectionTicks(); // Assicura che currentMidiData.timeSignatureChanges sia aggiornato
-    }
 
     const track = new MidiWriter.Track();
     track.setTempo(bpm, 0);
@@ -262,22 +259,20 @@ function downloadSingleTrackMidi(trackName, midiEvents, fileName, bpm, timeSigna
 
 /**
  * Gestisce la generazione e il download del MIDI degli accordi "PAD" (sostenuti) su traccia singola.
- * Usa `detailedHarmonicEvents` e suona solo accordi principali.
+ * Usa `mainChordSlots` per creare accordi lunghi e stabili.
  */
 function handleGenerateSingleTrackChordMidi() {
     if (!currentMidiData || !currentMidiData.sections) { alert("Genera prima una canzone."); return; }
-    // Assicurati che TICKS_PER_QUARTER_NOTE_REFERENCE sia disponibile
     if (typeof TICKS_PER_QUARTER_NOTE_REFERENCE === 'undefined') { console.error("TICKS_PER_QUARTER_NOTE_REFERENCE non definito!"); return; }
-
 
     const { title, bpm, sections, capriceNum, timeSignatureChanges } = currentMidiData;
     const chordMIDIEvents = [];
 
     sections.forEach(sectionData => {
-        if (sectionData.detailedHarmonicEvents && sectionData.detailedHarmonicEvents.length > 0) {
-            sectionData.detailedHarmonicEvents.forEach(eventDetail => {
-                if (eventDetail.chordName && (!eventDetail.isPassing && !eventDetail.isHit) && eventDetail.durationTicks > 0) {
-                    const chordDefinition = CHORD_LIB[eventDetail.chordName] || (typeof getChordNotes === 'function' ? getChordNotes(getChordRootAndType(eventDetail.chordName).root, getChordRootAndType(eventDetail.chordName).type) : null);
+        if (sectionData.mainChordSlots && sectionData.mainChordSlots.length > 0) {
+            sectionData.mainChordSlots.forEach(slot => {
+                if (slot.chordName && slot.effectiveDurationTicks > 0) {
+                    const chordDefinition = CHORD_LIB[slot.chordName] || (typeof getChordNotes === 'function' ? getChordNotes(getChordRootAndType(slot.chordName).root, getChordRootAndType(slot.chordName).type) : null);
 
                     if (chordDefinition && chordDefinition.notes && chordDefinition.notes.length > 0) {
                         const midiNoteNumbers = chordDefinition.notes.map(noteName => {
@@ -296,8 +291,8 @@ function handleGenerateSingleTrackChordMidi() {
                         if (midiNoteNumbers.length > 0) {
                             chordMIDIEvents.push({
                                 pitch: midiNoteNumbers,
-                                duration: `T${Math.round(eventDetail.durationTicks)}`,
-                                startTick: sectionData.startTick + eventDetail.startTickInSection,
+                                duration: `T${Math.round(slot.effectiveDurationTicks)}`,
+                                startTick: sectionData.startTick + slot.effectiveStartTickInSection,
                                 velocity: 60,
                             });
                         }
@@ -312,8 +307,7 @@ function handleGenerateSingleTrackChordMidi() {
 
 /**
  * Handler per generare e scaricare gli accordi con ritmo.
- * Adattato per iterare su detailedHarmonicEvents e preparare la chiamata a generateChordRhythmEvents.
- * Aggiunta rimozione sovrapposizioni.
+ * Chiama il nuovo generatore di arpeggi semplici per ogni mainChordSlot.
  */
 function handleGenerateChordRhythm() {
     if (!currentMidiData || !currentMidiData.sections) { alert("Genera prima una canzone."); return; }
@@ -336,56 +330,27 @@ function handleGenerateChordRhythm() {
         };
 
         currentMidiData.sections.forEach(section => {
-            if (section.detailedHarmonicEvents && section.detailedHarmonicEvents.length > 0) {
-                section.detailedHarmonicEvents.forEach(harmonicEvent => {
-                    if (harmonicEvent.chordName && (!harmonicEvent.isPassing && !harmonicEvent.isHit) && harmonicEvent.durationTicks > (TICKS_PER_QUARTER_NOTE_REFERENCE / 8) ) { // Durata minima sensata
-                        const slotContext = {
-                            chordName: harmonicEvent.chordName,
-                            startTickAbsolute: section.startTick + harmonicEvent.startTickInSection,
-                            durationTicks: harmonicEvent.durationTicks,
-                            timeSignature: section.timeSignature
-                        };
-                        const eventsForThisSlot = generateChordRhythmEvents(
-                            currentMidiData, // Passa songMidiData per BPM etc., anche se non lo usa per il loop principale
-                            CHORD_LIB,
-                            NOTE_NAMES,
-                            helpers,
-                            slotContext // Il contesto specifico per questo slot
-                        );
-                        if (eventsForThisSlot) {
-                            allRhythmicChordEvents.push(...eventsForThisSlot);
-                        }
+            if (section.mainChordSlots && section.mainChordSlots.length > 0) {
+                section.mainChordSlots.forEach(slot => {
+                    const slotContext = {
+                        chordName: slot.chordName,
+                        startTickAbsolute: section.startTick + slot.effectiveStartTickInSection,
+                        durationTicks: slot.effectiveDurationTicks,
+                        timeSignature: slot.timeSignature
+                    };
+                    const eventsForThisSlot = generateChordRhythmEvents(
+                        currentMidiData,
+                        CHORD_LIB,
+                        NOTE_NAMES,
+                        helpers,
+                        slotContext
+                    );
+                    if (eventsForThisSlot) {
+                        allRhythmicChordEvents.push(...eventsForThisSlot);
                     }
                 });
             }
         });
-
-        // --- NUOVO: Rimozione Sovrapposizioni per Chord Rhythm ---
-        if (allRhythmicChordEvents.length > 1) {
-            allRhythmicChordEvents.sort((a, b) => a.startTick - b.startTick); // Ordina per startTick
-
-            for (let i = 0; i < allRhythmicChordEvents.length - 1; i++) {
-                const currentEvent = allRhythmicChordEvents[i];
-                const nextEvent = allRhythmicChordEvents[i+1];
-                const currentEventDurationNum = parseInt(currentEvent.duration.substring(1)); // "T128" -> 128
-
-                if (currentEvent.startTick + currentEventDurationNum > nextEvent.startTick) {
-                    const newDurationNum = nextEvent.startTick - currentEvent.startTick;
-                    if (newDurationNum >= (TICKS_PER_QUARTER_NOTE_REFERENCE / 16) ) { // Durata minima (es. 64esimo)
-                        currentEvent.duration = `T${newDurationNum}`;
-                    } else {
-                        // Se la nuova durata è troppo breve, potremmo rimuovere l'evento corrente o il successivo.
-                        // Per ora, accorciamo e basta, anche se potrebbe risultare in note brevissime.
-                        // Una logica più complessa potrebbe rimuovere l'evento più corto o quello meno importante.
-                        currentEvent.duration = `T${Math.max(1, TICKS_PER_QUARTER_NOTE_REFERENCE / 16)}`; // Forza durata minima
-                    }
-                }
-            }
-            // Filtra eventi con durata nulla o negativa che potrebbero risultare
-            allRhythmicChordEvents = allRhythmicChordEvents.filter(event => parseInt(event.duration.substring(1)) > 0);
-        }
-        // --- FINE NUOVO ---
-
 
         if (allRhythmicChordEvents && allRhythmicChordEvents.length > 0) {
             const fileName = `Phalbo_Caprice_n${currentMidiData.capriceNum || 'X'}_Chords_Rhythm.mid`;
@@ -469,24 +434,33 @@ function handleGenerateVocalLine() {
     finally { if (vocalBtn) { vocalBtn.disabled = false; vocalBtn.textContent = "Vocal Shame Machine"; } }
 }
 
+function getScaleNotes(root, scale) {
+    // Simple implementation for the context of this file
+    const scaleData = scales[scale];
+    if (!scaleData) return [];
+    const rootIndex = NOTE_NAMES.indexOf(root);
+    if (rootIndex === -1) return [];
+    return scaleData.intervals.map(interval => NOTE_NAMES[(rootIndex + interval) % 12]);
+}
+
 function handleGenerateBassLine() {
     if (!currentMidiData || !currentMidiData.sections || !currentMidiData.mainScaleNotes || currentMidiData.mainScaleNotes.length === 0) {
         alert("Dati canzone, sezioni o scala principale mancanti. Genera prima una struttura completa."); return;
     }
-    if (typeof generateBassLineForSong_v2 !== "function") { alert("Errore interno: Funzione generateBassLineForSong_v2 non trovata."); return; }
+    if (typeof generateBassLineForSong !== "function") { alert("Errore interno: Funzione generateBassLineForSong non trovata."); return; }
     if (typeof TICKS_PER_QUARTER_NOTE_REFERENCE === 'undefined') { console.error("TICKS_PER_QUARTER_NOTE_REFERENCE non definito!"); return; }
 
 
     const bassBtn = document.getElementById('generateBassLineButton');
     if (bassBtn) { bassBtn.disabled = true; bassBtn.textContent = "Creating Bass Line..."; }
     try {
-        const options = { globalRandomActivationProbability: 0.5 };
-        const bassLine = generateBassLineForSong_v2(
-            currentMidiData, currentMidiData.mainScaleNotes, currentMidiData.mainScaleRoot,
-            CHORD_LIB, scales, NOTE_NAMES, allNotesWithFlats,
-            getChordNotes, getNoteName, getRandomElement, getChordRootAndType,
-            options
-        );
+        const helpers = {
+            getChordRootAndType,
+            getChordNotes,
+            getScaleNotes,
+            getRandomElement
+        };
+        const bassLine = generateBassLineForSong(currentMidiData, helpers);
         if (bassLine && bassLine.length > 0) {
             const fileName = `Phalbo_Caprice_bass_n${currentMidiData.capriceNum || 'X'}.mid`;
             downloadSingleTrackMidi(
