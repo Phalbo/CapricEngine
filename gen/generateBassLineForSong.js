@@ -34,8 +34,9 @@ const BASS_RHYTHMIC_PATTERNS = {
     ]
 };
 
-function generateBassPhraseForSlot(context, lastEvent) {
+function generateBassPhraseForSlot(context, lastEvent, helpers) {
     const { chordName, durationTicks, timeSignature, songData, sectionIndex, slotIndex } = context;
+    const { getChordRootAndType, getChordNotes, getRandomElement } = helpers;
     const phraseEvents = [];
     const ticksPerBeat = (4 / timeSignature[1]) * TICKS_PER_QUARTER_NOTE_REFERENCE;
 
@@ -77,8 +78,8 @@ function generateBassPhraseForSlot(context, lastEvent) {
                     songData,
                     sectionIndex,
                     slotIndex
+                }, helpers);
 
-                }, { getChordRootAndType, getChordNotes, getScaleNotes, getRandomElement });
                 phraseEvents.push({
                     pitch: [pitch],
                     duration: `T${durationInTicks}`,
@@ -108,7 +109,6 @@ function generateBassLineForSong(songData, helpers) {
                 sectionIndex,
                 slotIndex
             };
-
             const phrase = generateBassPhraseForSlot(context, lastEvent, helpers);
             if (phrase.length > 0) {
                 lastEvent = phrase[phrase.length - 1];
