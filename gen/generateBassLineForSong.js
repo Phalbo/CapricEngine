@@ -77,7 +77,9 @@ function generateBassPhraseForSlot(context, lastEvent) {
                     songData,
                     sectionIndex,
                     slotIndex
+
                 }, { getChordRootAndType, getChordNotes, getScaleNotes, getRandomElement });
+
 
                 phraseEvents.push({
                     pitch: [pitch],

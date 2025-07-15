@@ -1,7 +1,9 @@
 // gen/bass-pitch-selector.js
 
+
 function selectBassPitch(params, helpers) {
     const { getChordRootAndType, getChordNotes, getScaleNotes, getRandomElement } = helpers;
+
     const { chord, isFirstBeat, lastNote, songData } = params;
     const { root, type } = getChordRootAndType(chord.chordName);
     const chordNotes = getChordNotes(root, type);
