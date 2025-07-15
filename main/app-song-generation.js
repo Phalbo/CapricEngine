@@ -35,23 +35,23 @@ function normalizeChordNameToSharps(chordName) {
     }
     const { root, type } = getChordRootAndType(chordName.trim());
     if (!root) return chordName.trim(); // Se non riesce a parsare, restituisce l'originale
-    
+
     const isValidSuffix = Object.values(QUALITY_DEFS).some(def => def.suffix === type.trim());
-    if (!isValidSuffix && type.trim() !== "") { 
+    if (!isValidSuffix && type.trim() !== "") {
         const flatIndexForRootOnly = allNotesWithFlats.indexOf(root);
         if (flatIndexForRootOnly !== -1 && NOTE_NAMES[flatIndexForRootOnly] && NOTE_NAMES[flatIndexForRootOnly] !== root) {
             return NOTE_NAMES[flatIndexForRootOnly];
         }
         return root;
     }
-    
+
     const trimmedType = type.trim();
 
     const flatIndex = allNotesWithFlats.indexOf(root);
     if (flatIndex !== -1 && NOTE_NAMES[flatIndex] && NOTE_NAMES[flatIndex] !== root) {
         return NOTE_NAMES[flatIndex] + trimmedType;
     }
-    return root + trimmedType; 
+    return root + trimmedType;
 }
 
 
@@ -60,11 +60,11 @@ function normalizeChordNameToSharps(chordName) {
  */
 function generateChordsForSection(
     sectionName,
-    keyInfo, 
+    keyInfo,
     mood,
-    allGeneratedChordsSet, 
-    measures, 
-    sectionTimeSignature, 
+    allGeneratedChordsSet,
+    measures,
+    sectionTimeSignature,
     progressionCache
 ) {
     if (!keyInfo || typeof keyInfo.root === 'undefined' || typeof keyInfo.mode === 'undefined') {
@@ -148,7 +148,7 @@ function generateChordsForSection(
     if (targetBaseProgressionLength === 0 && cleanSectionNameForStyle !== "silence") {
         targetBaseProgressionLength = 1;
     }
-    
+
     if (cleanSectionNameForStyle === "silence") targetBaseProgressionLength = 0;
     targetBaseProgressionLength = Math.max(targetBaseProgressionLength, (minObs > 0 && targetBaseProgressionLength === 0 ? 1 : 0));
 
@@ -324,7 +324,7 @@ async function generateSongArchitecture() {
         let totalSongMeasures = 0;
         const progressionCache = {};
         let currentGlobalTickForTS = 0;
-        const rawMidiSectionsData = []; 
+        const rawMidiSectionsData = [];
 
         songStructureDefinition.forEach((sectionNameString, sectionIndex) => {
             if(typeof sectionNameString !== 'string'){ console.error("Nome sezione non valido: ", sectionNameString); return; }
@@ -370,10 +370,10 @@ async function generateSongArchitecture() {
                 progressionCache,
                 { varyChance: 0.05 }
             );
-            
+
             rawMidiSectionsData.push({
                 name: sectionNameString,
-                baseChords: baseChordProgressionForSection, 
+                baseChords: baseChordProgressionForSection,
                 measures: finalMeasures,
                 timeSignature: [...activeTimeSignatureForSectionLogic],
                 startTick: currentGlobalTickForTS,
@@ -388,210 +388,28 @@ async function generateSongArchitecture() {
             currentGlobalTickForTS += finalMeasures * beatsPerMeasureInSection * ticksPerBeatForThisSection;
         });
 
-        // --- FASE DI ARRANGIAMENTO RITMICO-ARMONICO ---
+        // --- FASE DI CREAZIONE DEI mainChordSlots (Logica Semplificata) ---
         rawMidiSectionsData.forEach(sectionData => {
-            const sectionTS = sectionData.timeSignature;
-            const tsKey = `${sectionTS[0]}/${sectionTS[1]}`;
-            const sectionTypeForPatternLookup = getCleanSectionName(sectionData.name).replace(/-double|-mod|-quiet|-sospeso/g, ''); 
-            
-            const patternsForSectionType = SECTION_HARMONIC_RHYTHM_PATTERNS[tsKey]?.[sectionTypeForPatternLookup] || 
-                                           SECTION_HARMONIC_RHYTHM_PATTERNS[tsKey]?.["verse"] || 
-                                           SECTION_HARMONIC_RHYTHM_PATTERNS["4/4"]?.["verse"] || // Fallback globale
-                                           [{ name: "DefaultWholeBar", weight: 100, pattern: [{ degree: "FROM_CHOSEN_PATTERN", durationBeats: sectionTS[0] }] }];
+            const ticksPerBar = (4 / sectionData.timeSignature[1]) * sectionData.timeSignature[0] * TICKS_PER_QUARTER_NOTE_REFERENCE;
 
-
-            let currentBaseChordIndexTracker = 0; // Traccia l'indice dell'accordo nella baseProgression
-            let sectionTickOffset = 0; 
-            const ticksPerBeatUnitInSection = (4 / sectionTS[1]) * TICKS_PER_QUARTER_NOTE_REFERENCE;
-
-            for (let measureNum = 0; measureNum < sectionData.measures; measureNum++) {
-                let harmonicPatternForMeasure = getRandomElement(patternsForSectionType); 
-                if (!harmonicPatternForMeasure || !harmonicPatternForMeasure.pattern) { // Ulteriore fallback se getRandomElement fallisce o pattern è malformato
-                    harmonicPatternForMeasure = { name: "FallbackMeasure", weight:100, pattern: [{ degree: "FROM_CHOSEN_PATTERN", durationBeats: sectionTS[0]}] };
+            for (let i = 0; i < sectionData.measures; i++) {
+                const chordIndex = Math.min(i, sectionData.baseChords.length - 1);
+                if (sectionData.baseChords.length > 0) {
+                    sectionData.mainChordSlots.push({
+                        chordName: sectionData.baseChords[chordIndex],
+                        effectiveStartTickInSection: i * ticksPerBar,
+                        effectiveDurationTicks: ticksPerBar,
+                        timeSignature: sectionData.timeSignature,
+                        sectionStartTick: sectionData.startTick
+                    });
                 }
-                
-                let tickWithinMeasure = 0;
-                const ticksInThisMeasure = sectionTS[0] * ticksPerBeatUnitInSection;
-                let baseChordConsumedInMeasure = false;
-
-                for (const patternEvent of harmonicPatternForMeasure.pattern) {
-                    if (tickWithinMeasure >= ticksInThisMeasure) break; 
-
-                    let chordNameToUse = "N/A_RhythmErr";
-                    let currentEventIsPassing = false;
-                    let currentEventIsHit = false;
-                    let currentPatternDegree = patternEvent.degree;
-
-                    switch (currentPatternDegree) {
-                        case "FROM_CHOSEN_PATTERN":
-                            if (sectionData.baseChords.length > 0) {
-                                chordNameToUse = sectionData.baseChords[currentBaseChordIndexTracker % sectionData.baseChords.length];
-                            } else { chordNameToUse = selectedKey.root + QUALITY_DEFS.major.suffix; } // Fallback se baseChords è vuoto
-                            break;
-                        case "NEXT_FROM_CHOSEN_PATTERN":
-                            if (sectionData.baseChords.length > 0) {
-                                currentBaseChordIndexTracker++;
-                                chordNameToUse = sectionData.baseChords[currentBaseChordIndexTracker % sectionData.baseChords.length];
-                                baseChordConsumedInMeasure = true;
-                            } else { chordNameToUse = selectedKey.root + QUALITY_DEFS.major.suffix;}
-                            break;
-                        case "PREV_FROM_CHOSEN_PATTERN":
-                             if (sectionData.baseChords.length > 0) {
-                                let prevIndex = currentBaseChordIndexTracker -1;
-                                if (prevIndex < 0 && sectionData.baseChords.length > 0) prevIndex = sectionData.baseChords.length -1; 
-                                chordNameToUse = sectionData.baseChords[prevIndex % sectionData.baseChords.length];
-                            } else { chordNameToUse = selectedKey.root + QUALITY_DEFS.major.suffix;}
-                            break;
-                        case "PASSING":
-                            currentEventIsPassing = true; // Marcatore
-                            // FASE 1: Tratta come continuazione, o primo accordo base se non c'è storia
-                            if (sectionData.detailedHarmonicEvents.length > 0 && !sectionData.detailedHarmonicEvents[sectionData.detailedHarmonicEvents.length - 1].isPassing) {
-                                chordNameToUse = sectionData.detailedHarmonicEvents[sectionData.detailedHarmonicEvents.length - 1].chordName;
-                            } else if (sectionData.baseChords.length > 0) {
-                                chordNameToUse = sectionData.baseChords[currentBaseChordIndexTracker % sectionData.baseChords.length];
-                            } else { chordNameToUse = selectedKey.root + QUALITY_DEFS.major.suffix;}
-                            break;
-                        case "HIT":
-                            currentEventIsHit = true; // Marcatore
-                            if (sectionData.baseChords.length > 0) {
-                                chordNameToUse = sectionData.baseChords[currentBaseChordIndexTracker % sectionData.baseChords.length];
-                            } else { chordNameToUse = selectedKey.root + QUALITY_DEFS.major.suffix;}
-                            break;
-                        default:
-                            if (sectionData.baseChords.length > 0) {
-                                chordNameToUse = sectionData.baseChords[currentBaseChordIndexTracker % sectionData.baseChords.length];
-                            } else { chordNameToUse = selectedKey.root + QUALITY_DEFS.major.suffix;}
-                    }
-
-                    const patternUnitMultiplier = patternEvent.unit || 1;
-                    const actualBeatDurationForPatternUnits = ticksPerBeatUnitInSection * patternUnitMultiplier;
-                    let eventDurationTicks = Math.round(patternEvent.durationBeats * actualBeatDurationForPatternUnits);
-                    
-                    if (tickWithinMeasure + eventDurationTicks > ticksInThisMeasure) {
-                        eventDurationTicks = ticksInThisMeasure - tickWithinMeasure;
-                    }
-                    if (eventDurationTicks <= 0 && !currentEventIsPassing ) continue; 
-                    if (eventDurationTicks <= 0 && currentEventIsPassing ){ continue; }
-
-                    if (chordNameToUse !== "N/A_RhythmErr") {
-                        sectionData.detailedHarmonicEvents.push({
-                            chordName: chordNameToUse,
-                            startTickInSection: sectionTickOffset + tickWithinMeasure,
-                            durationTicks: eventDurationTicks,
-                            isPassing: currentEventIsPassing, 
-                            isHit: currentEventIsHit,
-                            baseChordIndexAffiliation: currentBaseChordIndexTracker % (sectionData.baseChords.length || 1) // Per mainChordSlots
-                        });
-                    }
-                    tickWithinMeasure += eventDurationTicks;
-                }
-                // Se nessun "NEXT_FROM_CHOSEN_PATTERN" ha consumato un accordo base in questa misura,
-                // e la baseProgression è pensata per avere circa un accordo per battuta (o più),
-                // avanziamo l'indice per la prossima battuta.
-                if (!baseChordConsumedInMeasure && sectionData.baseChords.length > sectionData.measures && sectionData.baseChords.length > 0) {
-                     currentBaseChordIndexTracker++;
-                } else if (!baseChordConsumedInMeasure && sectionData.baseChords.length <= sectionData.measures && sectionData.baseChords.length > 0 && measureNum < sectionData.baseChords.length -1) {
-                    // Se la progressione base ha un accordo per battuta (o meno)
-                    // e non è stato consumato, avanziamo per la prossima battuta se ci sono ancora accordi base non "visitati"
-                    currentBaseChordIndexTracker++;
-                }
-
-
-                sectionTickOffset += ticksInThisMeasure; 
-            }
-
-            // --- CREAZIONE di mainChordSlots ---
-            if (sectionData.baseChords && sectionData.baseChords.length > 0) {
-                let tempMainChordSlots = [];
-                for (let i = 0; i < sectionData.baseChords.length; i++) {
-                    const originalBaseChordName = sectionData.baseChords[i];
-                    let firstEventForThisBaseChord = null;
-                    let lastEventForThisBaseChord = null;
-
-                    // Trova il primo e l'ultimo detailedHarmonicEvent affiliato a questo indice della baseProgression
-                    for(const detailedEvent of sectionData.detailedHarmonicEvents) {
-                        if (detailedEvent.baseChordIndexAffiliation === i && !detailedEvent.isPassing) { // Considera solo eventi principali
-                            if (!firstEventForThisBaseChord) {
-                                firstEventForThisBaseChord = detailedEvent;
-                            }
-                            lastEventForThisBaseChord = detailedEvent; // Continua ad aggiornare per trovare l'ultimo
-                        }
-                    }
-                    
-                    if (firstEventForThisBaseChord) {
-                        let slotEndTick = sectionData.measures * sectionTS[0] * ticksPerBeatUnitInSection; // Fine della sezione
-                        // Cerca l'inizio del prossimo slot di accordo principale (affiliato a i+1)
-                        let nextBaseChordAffiliationIndex = (i + 1);
-                        if (nextBaseChordAffiliationIndex < sectionData.baseChords.length) {
-                            const firstEventOfNextSlot = sectionData.detailedHarmonicEvents.find(
-                                de => de.baseChordIndexAffiliation === nextBaseChordAffiliationIndex && !de.isPassing
-                            );
-                            if (firstEventOfNextSlot) {
-                                slotEndTick = firstEventOfNextSlot.startTickInSection;
-                            }
-                        }
-                        // Se è l'ultimo accordo della base progression, lo slot finisce alla fine della sezione,
-                        // a meno che non ci siano eventi successivi non affiliati o affiliati a indici precedenti (loop)
-                        // che iniziano prima della fine della sezione.
-                        // Questa logica può essere complessa se i pattern armonici fanno saltare molto gli indici base.
-                        // Per ora, la fine dello slot è l'inizio del successivo slot principale o la fine della sezione.
-                        
-                        const slotStartTick = firstEventForThisBaseChord.startTickInSection;
-                        const slotDuration = slotEndTick - slotStartTick;
-
-                        if (slotDuration > 0) {
-                             // Evita di aggiungere slot duplicati per lo stesso indice di baseChord
-                            if (!tempMainChordSlots.some(s => s.originalBaseChordIndex === i)) {
-                                tempMainChordSlots.push({
-                                    chordName: originalBaseChordName,
-                                    effectiveStartTickInSection: slotStartTick,
-                                    effectiveDurationTicks: slotDuration,
-                                    originalBaseChordIndex: i // Per debug o logica avanzata
-                                });
-                            }
-                        }
-                    }
-                }
-                // Ordina per start tick e poi per indice originale per gestire sovrapposizioni o riordini
-                tempMainChordSlots.sort((a,b) => {
-                    if (a.effectiveStartTickInSection !== b.effectiveStartTickInSection) {
-                        return a.effectiveStartTickInSection - b.effectiveStartTickInSection;
-                    }
-                    return a.originalBaseChordIndex - b.originalBaseChordIndex;
-                });
-                
-                // Raffina le durate per evitare sovrapposizioni negli slot principali
-                for(let k=0; k < tempMainChordSlots.length -1; k++){
-                    const currentSlot = tempMainChordSlots[k];
-                    const nextSlot = tempMainChordSlots[k+1];
-                    if (currentSlot.effectiveStartTickInSection + currentSlot.effectiveDurationTicks > nextSlot.effectiveStartTickInSection) {
-                        currentSlot.effectiveDurationTicks = nextSlot.effectiveStartTickInSection - currentSlot.effectiveStartTickInSection;
-                    }
-                }
-                // Assicura che l'ultimo slot non superi la durata della sezione
-                if(tempMainChordSlots.length > 0) {
-                    const lastSlot = tempMainChordSlots[tempMainChordSlots.length - 1];
-                    const sectionEndTick = sectionData.measures * sectionTS[0] * ticksPerBeatUnitInSection;
-                    if(lastSlot.effectiveStartTickInSection + lastSlot.effectiveDurationTicks > sectionEndTick) {
-                        lastSlot.effectiveDurationTicks = sectionEndTick - lastSlot.effectiveStartTickInSection;
-                    }
-                    // Rimuovi slot con durata <=0 dopo l'aggiustamento
-                    tempMainChordSlots = tempMainChordSlots.filter(slot => slot.effectiveDurationTicks > 0);
-                }
-
-                sectionData.mainChordSlots = tempMainChordSlots;
-
-            } else {
-                sectionData.mainChordSlots = []; // Nessun accordo base, nessun slot principale
             }
         });
-        // --- FINE FASE DI ARRANGIAMENTO E CREAZIONE mainChordSlots ---
+        // --- FINE FASE DI CREAZIONE mainChordSlots ---
 
-        currentMidiData.sections = rawMidiSectionsData; 
+        currentMidiData.sections = rawMidiSectionsData;
         currentMidiData.timeSignatureChanges = timeSignatureChanges;
         currentMidiData.totalMeasures = totalSongMeasures;
-
-        recalculateTimeSignatureChangesAndSectionTicks(); 
 
         const mainScaleText = getScaleNotesText(selectedKey.root, selectedKey.mode);
         const mainScaleParts = mainScaleText.split(':'); let mainScaleParsedNotes = []; let mainScaleParsedRoot = selectedKey.root; let mainScaleParsedName = selectedKey.mode;
@@ -654,75 +472,6 @@ async function generateSongArchitecture() {
         songOutputDiv.innerHTML = `<p>Errore critico: ${error.message}. Controlla la console.</p>`;
     } finally {
         if (generateButton) { generateButton.disabled = false; generateButton.textContent = 'Generate'; }
-    }
-}
-
-/**
- * Ricalcola i tick di inizio per ogni sezione e i cambi di time signature.
- * Utile per assicurare coerenza prima dell'esportazione MIDI.
- * Questa funzione modifica currentMidiData.
- */
-function recalculateTimeSignatureChangesAndSectionTicks() {
-    if (!currentMidiData || !currentMidiData.sections) return;
-
-    const newTimeSignatureChanges = [];
-    let currentGlobalTick = 0;
-    let lastPushedTsArray = null;
-
-    currentMidiData.sections.forEach((section) => {
-        section.startTick = currentGlobalTick; 
-        const sectionTSArray = section.timeSignature;
-
-        if (newTimeSignatureChanges.length === 0 ||
-            (lastPushedTsArray && (sectionTSArray[0] !== lastPushedTsArray[0] || sectionTSArray[1] !== lastPushedTsArray[1]))) {
-            const lastChange = newTimeSignatureChanges[newTimeSignatureChanges.length -1];
-            if(!lastChange || lastChange.tick !== currentGlobalTick || lastChange.ts[0] !== sectionTSArray[0] || lastChange.ts[1] !== sectionTSArray[1]){
-                newTimeSignatureChanges.push({ tick: currentGlobalTick, ts: [...sectionTSArray] });
-            }
-            lastPushedTsArray = [...sectionTSArray];
-        }
-
-        const beatsPerMeasureInSection = sectionTSArray[0];
-        const beatUnitValueInSection = sectionTSArray[1];
-        const ticksPerBeatForThisSection = (4 / beatUnitValueInSection) * TICKS_PER_QUARTER_NOTE_REFERENCE;
-        currentGlobalTick += section.measures * beatsPerMeasureInSection * ticksPerBeatForThisSection;
-    });
-
-    if (newTimeSignatureChanges.length === 0 && currentMidiData.sections.length > 0) {
-        newTimeSignatureChanges.push({ tick: 0, ts: [...currentMidiData.sections[0].timeSignature] });
-    }
-    else if (newTimeSignatureChanges.length > 0 && newTimeSignatureChanges[0].tick !== 0) {
-         // Assicura che ci sia sempre un TS a tick 0
-        const firstSectionTS = currentMidiData.sections.length > 0 ? currentMidiData.sections[0].timeSignature : [4,4];
-        newTimeSignatureChanges.unshift({ tick: 0, ts: [...firstSectionTS] });
-        // Rimuovi duplicati consecutivi o a tick 0
-        for(let i = newTimeSignatureChanges.length - 1; i > 0; i--) {
-            if (newTimeSignatureChanges[i].tick === newTimeSignatureChanges[i-1].tick &&
-                newTimeSignatureChanges[i].ts[0] === newTimeSignatureChanges[i-1].ts[0] &&
-                newTimeSignatureChanges[i].ts[1] === newTimeSignatureChanges[i-1].ts[1]) {
-                newTimeSignatureChanges.splice(i, 1);
-            }
-        }
-         // Se il primo e il secondo sono identici e il primo è a tick 0, rimuovi il secondo
-        if (newTimeSignatureChanges.length > 1 && newTimeSignatureChanges[0].tick === 0 && newTimeSignatureChanges[1].tick === 0 &&
-            newTimeSignatureChanges[0].ts[0] === newTimeSignatureChanges[1].ts[0] &&
-            newTimeSignatureChanges[0].ts[1] === newTimeSignatureChanges[1].ts[1]) {
-            newTimeSignatureChanges.splice(1,1);
-        }
-    }
-    currentMidiData.timeSignatureChanges = newTimeSignatureChanges;
-
-    const initialTimeSigElement = document.getElementById('initial-time-signature');
-    if (initialTimeSigElement && currentMidiData.timeSignatureChanges.length > 0) {
-        const firstTS = currentMidiData.timeSignatureChanges[0].ts;
-        let uniqueTimeSignatures = new Set(currentMidiData.timeSignatureChanges.map(tc => `${tc.ts[0]}/${tc.ts[1]}`));
-        
-        if (uniqueTimeSignatures.size > 1) {
-            let tsString = `Variable (starts ${firstTS[0]}/${firstTS[1]})`;
-            initialTimeSigElement.innerHTML = `<strong>Meter:</strong> ${tsString}`;
-        } else {
-            initialTimeSigElement.innerHTML = `<strong>Meter:</strong> ${firstTS[0]}/${firstTS[1]}`;
-        }
     }
 }
 
