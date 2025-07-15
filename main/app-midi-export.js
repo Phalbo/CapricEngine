@@ -438,20 +438,18 @@ function handleGenerateBassLine() {
     if (!currentMidiData || !currentMidiData.sections || !currentMidiData.mainScaleNotes || currentMidiData.mainScaleNotes.length === 0) {
         alert("Dati canzone, sezioni o scala principale mancanti. Genera prima una struttura completa."); return;
     }
-    if (typeof generateBassLineForSong_v2 !== "function") { alert("Errore interno: Funzione generateBassLineForSong_v2 non trovata."); return; }
+
+    if (typeof generateBassLineForSong !== "function") { alert("Errore interno: Funzione generateBassLineForSong non trovata."); return; }
+
     if (typeof TICKS_PER_QUARTER_NOTE_REFERENCE === 'undefined') { console.error("TICKS_PER_QUARTER_NOTE_REFERENCE non definito!"); return; }
 
 
     const bassBtn = document.getElementById('generateBassLineButton');
     if (bassBtn) { bassBtn.disabled = true; bassBtn.textContent = "Creating Bass Line..."; }
     try {
-        const options = { globalRandomActivationProbability: 0.5 };
-        const bassLine = generateBassLineForSong_v2(
-            currentMidiData, currentMidiData.mainScaleNotes, currentMidiData.mainScaleRoot,
-            CHORD_LIB, scales, NOTE_NAMES, allNotesWithFlats,
-            getChordNotes, getNoteName, getRandomElement, getChordRootAndType,
-            options
-        );
+
+        const bassLine = generateBassLineForSong(currentMidiData);
+
         if (bassLine && bassLine.length > 0) {
             const fileName = `Phalbo_Caprice_bass_n${currentMidiData.capriceNum || 'X'}.mid`;
             downloadSingleTrackMidi(
