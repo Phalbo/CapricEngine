@@ -61,5 +61,6 @@ function selectBassPitch(params, helpers) {
         pitch += 12;
     }
 
+
     return pitch;
 }
