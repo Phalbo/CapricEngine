@@ -57,5 +57,10 @@ function selectBassPitch(params, helpers) {
         }
     }
 
+    while (pitch < 36) {
+        pitch += 12;
+    }
+
+
     return pitch;
 }
