@@ -1,5 +1,5 @@
 
-# CapricEngine v2.12
+# CapricEngine v2.13
 
 
 CapricEngine is a web-based application that procedurally generates musical compositions. It allows users to select a mood, tempo, and key, and then generates a complete song structure with chords, a bassline, a melody, and a drum track. The application is built with HTML, CSS, and JavaScript, and uses the `midiwriter.js` library to export the generated music as MIDI files.
