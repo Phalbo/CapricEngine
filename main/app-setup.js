@@ -1,3 +1,4 @@
+
 // File: app-setup.js - v1.34
 // Responsabile dell'impostazione iniziale, creazione UI dinamica, listeners principali.
 
@@ -101,6 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (randomOption) randomOption.textContent = "Random";
     }
 
+
     const moodDropdown = document.getElementById('mood');
 
     const populateStructures = (mood = null) => {
@@ -109,7 +111,9 @@ document.addEventListener('DOMContentLoaded', () => {
         let templates = SONG_STRUCTURE_TEMPLATES;
         if (mood) {
             templates = SONG_STRUCTURE_TEMPLATES.filter(t => t.mood === mood);
+
         }
+
 
         templates.forEach(template => {
             const opt = document.createElement('option');
@@ -125,11 +129,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }).catch(() => {
             console.error("Could not load structures for dropdown.");
         });
+
     }
+
 
     moodDropdown.addEventListener('change', (event) => {
         populateStructures(event.target.value);
     });
+
     // --- Inizializzazione libreria accordi ---
     if (typeof buildChordLibrary === "function") {
         CHORD_LIB = buildChordLibrary();
@@ -197,3 +204,4 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 });
+
