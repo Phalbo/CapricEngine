@@ -1,6 +1,8 @@
 # CapricEngine v2.20
 
+
 ## Changelog (v2.20)
+
 
 *   **Mood-Based Generation:** The song generation logic has been significantly improved to be more mood-aware.
     *   **Song Structure Templates:** Added 20 new song structure templates, each with a descriptive name (e.g., "Build & Collapse", "Fast Spiral") and associated with a specific mood. The UI now displays these names and filters them based on the selected mood.
