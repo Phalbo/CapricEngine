@@ -4,26 +4,22 @@
 // la navigazione diteggiature (frecce/swipe/tap), e il nuovo stile sezioni.
 // CORREZIONE per ripristinare rendering scala e glossario accordi.
 
-// const SECTION_COLORS_LEGACY = { /* Non più usato per il nuovo stile sezioni */ };
-// const TEXT_COLOR_FOR_LIGHT_BG_LEGACY = "#121212";
-// const DEFAULT_TEXT_COLOR_LEGACY = "#e0e0e0";
-
 /**
  * Crea un ID HTML valido da un nome di accordo.
  */
 function sanitizeId(chordName) {
     if (typeof chordName !== 'string') return 'invalid_id';
     return chordName
-        .replace(/#/g, 'sharp') 
-        .replace(/\//g, 'slash') 
-        .replace(/[^\w-]/g, '_'); 
+        .replace(/#/g, 'sharp')
+        .replace(/\//g, 'slash')
+        .replace(/[^\w-]/g, '_');
 }
 
 /**
  * Aggiorna la visualizzazione di una singola entry del glossario accordi.
  */
 function updateChordEntryDisplay(fundamentalChordName) {
-    const chordData = glossaryChordData[fundamentalChordName]; 
+    const chordData = glossaryChordData[fundamentalChordName];
     if (!chordData || !chordData.shapes || chordData.shapes.length === 0) {
         return;
     }
@@ -32,22 +28,22 @@ function updateChordEntryDisplay(fundamentalChordName) {
     const guitarDiagramDiv = document.getElementById(`guitar-${sanitizedId}`);
     const posIndicatorSpan = document.getElementById(`pos-indicator-${sanitizedId}`);
 
-    if (typeof chordData.currentShapeIndex !== 'number' || 
-        chordData.currentShapeIndex < 0 || 
+    if (typeof chordData.currentShapeIndex !== 'number' ||
+        chordData.currentShapeIndex < 0 ||
         chordData.currentShapeIndex >= chordData.shapes.length) {
-        chordData.currentShapeIndex = 0; 
+        chordData.currentShapeIndex = 0;
     }
-    
+
     const currentShape = chordData.shapes[chordData.currentShapeIndex];
 
     if (guitarDiagramDiv && currentShape && typeof renderGuitarDiagram === 'function') {
         guitarDiagramDiv.innerHTML = renderGuitarDiagram(currentShape.guitarFrets);
-    } else if (guitarDiagramDiv && typeof renderGuitarDiagram === 'function') { 
-        guitarDiagramDiv.innerHTML = renderGuitarDiagram(["x","x","x","x","x","x"]); 
+    } else if (guitarDiagramDiv && typeof renderGuitarDiagram === 'function') {
+        guitarDiagramDiv.innerHTML = renderGuitarDiagram(["x","x","x","x","x","x"]);
     }
 
     if (posIndicatorSpan) {
-        if (chordData.shapes.length > 0 && currentShape) { 
+        if (chordData.shapes.length > 0 && currentShape) {
             posIndicatorSpan.innerHTML = `Pos&nbsp;${(chordData.currentShapeIndex || 0) + 1}&nbsp;/&nbsp;${chordData.shapes.length}`;
         } else {
             posIndicatorSpan.textContent = "N/A";
@@ -67,10 +63,10 @@ function navigateShape(fundamentalChordName, direction) {
     if (newIndex < 0) {
         newIndex = chordData.shapes.length - 1;
     } else if (newIndex >= chordData.shapes.length) {
-        newIndex = 0; 
+        newIndex = 0;
     }
     chordData.currentShapeIndex = newIndex;
-    if (chordData.shapes[newIndex]) { 
+    if (chordData.shapes[newIndex]) {
         chordData.currentShapeKey = chordData.shapes[newIndex].shapeKey;
     }
 
@@ -103,6 +99,9 @@ async function renderSongOutput(songData, allGeneratedChordsSet, styleNote, main
 
     const { displayTitle, bpm, timeSignatureChanges, sections, fullKeyName } = songData;
     const mood = document.getElementById('mood').value;
+    const moodProfile = MOOD_PROFILES[mood] || MOOD_PROFILES["very_normal_person"];
+    const finalStyleNote = styleNote || moodProfile.styleNotes || "Experiment.";
+
 
     let output = `<h3 class="song-title-main">${displayTitle}</h3><div class="song-main-info">`;
     output += `<p><strong>Mood:</strong> ${mood.replace(/_/g, ' ')}</p>`;
@@ -110,17 +109,17 @@ async function renderSongOutput(songData, allGeneratedChordsSet, styleNote, main
     output += `<p><strong>BPM:</strong> ${bpm} BPM</p>`;
     output += `<p id="initial-time-signature"><strong>Meter:</strong> ${timeSignatureChanges && timeSignatureChanges.length > 0 ? (timeSignatureChanges[0].ts[0] + '/' + timeSignatureChanges[0].ts[1]) : 'N/A'}</p>`;
     output += `<p id="estimated-duration"></p>`;
-    output += `<p><strong>Style Notes:</strong> ${styleNote}</p></div>`;
+    output += `<p><strong>Style Notes:</strong> ${finalStyleNote}</p></div>`;
 
     // NUOVA TIMELINE PER LE SEZIONI
-    output += `<div class="song-sections-timeline" id="song-timeline-container">`; 
+    output += `<div class="song-sections-timeline" id="song-timeline-container">`;
     sections.forEach((sectionData, sectionIndex) => {
-        const cleanSectionNameForCssVar = getCleanSectionName(sectionData.name); 
-        const sectionTitleForDisplay = sectionData.name.replace(/-/g, ' '); 
+        const cleanSectionNameForCssVar = getCleanSectionName(sectionData.name);
+        const sectionTitleForDisplay = sectionData.name.replace(/-/g, ' ');
         const barCountActual = sectionData.measures;
-        
-        let barUnitWidth = 35; 
-        let minVisibleBars = 4; 
+
+        let barUnitWidth = 35;
+        let minVisibleBars = 4;
         try {
             const rootStyles = getComputedStyle(document.documentElement);
             const barUnitWidthValue = rootStyles.getPropertyValue('--bar-unit-width').trim();
@@ -133,7 +132,7 @@ async function renderSongOutput(songData, allGeneratedChordsSet, styleNote, main
         const sectionWidthPx = barUnitWidth * displayBarUnits;
         const sectionColorVarName = `--section-color-${cleanSectionNameForCssVar}`;
 
-        output += `<div class="timeline-section-card" id="timeline-section-${sectionIndex}" 
+        output += `<div class="timeline-section-card" id="timeline-section-${sectionIndex}"
                         style="--section-color-var: var(${sectionColorVarName}, var(--section-color-default)); width: ${sectionWidthPx}px;">`;
         output += `  <div class="section-card-header">${sectionTitleForDisplay}</div>`;
         output += `  <div class="section-card-body">`;
@@ -144,9 +143,9 @@ async function renderSongOutput(songData, allGeneratedChordsSet, styleNote, main
         output += `    <div class="section-bars-label">${barCountActual} bars</div>`;
         output += `  </div>`;
         output += `  <div class="section-bar-grid" data-bar-count="${barCountActual}"></div>`;
-        output += `</div>`; 
+        output += `</div>`;
     });
-    output += `</div>`; 
+    output += `</div>`;
 
     // --- SEZIONE SCALA PRINCIPALE (RIPRISTINATA E CORRETTA) ---
     // Assicurati che l'elemento section abbia la classe .main-content-section per lo stile.
@@ -175,9 +174,9 @@ async function renderSongOutput(songData, allGeneratedChordsSet, styleNote, main
         const chordEntryId = `entry-${sanitizedChordNameId}`;
         output += `    <div class="chord-entry" id="${chordEntryId}"><p style="text-align:center; padding-top: 20px;">Loading ${fundamentalChordName_normalized}...</p></div>`;
     });
-    output += `  </div></section>`; 
-    
-    songOutputDiv.innerHTML = output; 
+    output += `  </div></section>`;
+
+    songOutputDiv.innerHTML = output;
 
     // Popola la griglia delle barre e gli accordi per ogni sezione DOPO l'inserimento nel DOM
     document.querySelectorAll('.timeline-section-card').forEach(card => {
@@ -188,7 +187,7 @@ async function renderSongOutput(songData, allGeneratedChordsSet, styleNote, main
         if (grid) {
             const count = parseInt(grid.dataset.barCount, 10);
             if (count > 0) {
-                grid.innerHTML = ''; 
+                grid.innerHTML = '';
                 for (let i = 0; i < count; i++) {
                     const barSegment = document.createElement('div');
                     barSegment.className = 'bar-segment';
@@ -201,28 +200,28 @@ async function renderSongOutput(songData, allGeneratedChordsSet, styleNote, main
             if (chordString && chordString.trim() !== '' && chordString !== '(No Chords)') { // Modificato il controllo
                 const existingLabel = chordsContainer.querySelector('.section-card-chords-label');
                 if (existingLabel) existingLabel.remove();
-                
+
                 const label = document.createElement('div');
-                label.className = 'section-card-chords-label'; 
+                label.className = 'section-card-chords-label';
                 label.textContent = 'Chords:';
                 chordsContainer.insertBefore(label, chordsDiv);
-                chordsDiv.textContent = chordString; 
+                chordsDiv.textContent = chordString;
             } else {
-                chordsDiv.textContent = '(Instrumental/Silence)'; 
+                chordsDiv.textContent = '(Instrumental/Silence)';
                 const existingLabel = chordsContainer.querySelector('.section-card-chords-label');
-                if (existingLabel) existingLabel.remove(); 
+                if (existingLabel) existingLabel.remove();
             }
         }
     });
-    
+
     // FASE 2: Carica e popola ogni entry del glossario asincronamente
     const chordLoadPromises = [];
-    window.glossaryChordData = {}; 
+    window.glossaryChordData = {};
 
     allGeneratedChordsSet.forEach(fundamentalChordName_normalized => {
         if (typeof fundamentalChordName_normalized !== 'string' || !fundamentalChordName_normalized.trim() || fundamentalChordName_normalized.includes("_ERR")) return;
 
-        const promise = (async () => { 
+        const promise = (async () => {
             const { root: chordRoot, type: chordSuffix } = getChordRootAndType(fundamentalChordName_normalized);
             let chordEntryInLib = CHORD_LIB[fundamentalChordName_normalized];
 
@@ -241,12 +240,12 @@ async function renderSongOutput(songData, allGeneratedChordsSet, styleNote, main
             }
 
             if (!chordEntryInLib.areVoicingsLoaded) {
-                const positionsFromPHP = await fetchChordVoicings(chordRoot, chordSuffix); 
+                const positionsFromPHP = await fetchChordVoicings(chordRoot, chordSuffix);
                 if (!Array.isArray(chordEntryInLib.shapes)) chordEntryInLib.shapes = [];
-                
+
                 let shapesToAddFromDB = [];
                 if (positionsFromPHP && positionsFromPHP.length > 0) {
-                    positionsFromPHP.forEach((posData, index) => { 
+                    positionsFromPHP.forEach((posData, index) => {
                         if (posData.frets && Array.isArray(posData.frets)) {
                             const parsedFrets = parseExternalFretString(posData.frets);
                             shapesToAddFromDB.push({
@@ -259,25 +258,25 @@ async function renderSongOutput(songData, allGeneratedChordsSet, styleNote, main
                 }
 
                 if (shapesToAddFromDB.length > 0) {
-                    chordEntryInLib.shapes = shapesToAddFromDB; 
+                    chordEntryInLib.shapes = shapesToAddFromDB;
                 }
-                
+
                 if ((chordEntryInLib.guitarFrets.every(f => f === "x")) && chordEntryInLib.shapes.length > 0) {
                     const firstValidShape = chordEntryInLib.shapes.find(s => s.guitarFrets && s.guitarFrets.some(f => f !== "x"));
                     if (firstValidShape) {
                         chordEntryInLib.guitarFrets = firstValidShape.guitarFrets;
                     }
                 }
-                chordEntryInLib.areVoicingsLoaded = true; 
+                chordEntryInLib.areVoicingsLoaded = true;
             }
-            
+
             if(chordEntryInLib.shapes.length === 0){
                 chordEntryInLib.shapes.push({
                     shapeKey: sanitizeId(`${fundamentalChordName_normalized}_ultimate_fallback_ui`),
                     displayName: "N/A",
                     guitarFrets: ["x","x","x","x","x","x"]
                 });
-                 if (chordEntryInLib.guitarFrets.every(f => f === "x")) { 
+                 if (chordEntryInLib.guitarFrets.every(f => f === "x")) {
                     chordEntryInLib.guitarFrets = ["x","x","x","x","x","x"];
                 }
             }
@@ -304,8 +303,8 @@ async function renderSongOutput(songData, allGeneratedChordsSet, styleNote, main
             if (entryDiv) {
                 let entryHtmlContent = `<strong>${currentFundamentalData.fundamentalDisplayName}</strong>`;
                 entryHtmlContent += `<code>Notes: ${currentFundamentalData.fundamentalNotes.join(" ")}</code>`;
-                entryHtmlContent += `<div class="diagram-container" data-chord="${fundamentalChordName_normalized}">`; 
-                
+                entryHtmlContent += `<div class="diagram-container" data-chord="${fundamentalChordName_normalized}">`;
+
                 let initialShapeToRender = currentFundamentalData.shapes[currentFundamentalData.currentShapeIndex || 0];
                 if (!initialShapeToRender || !initialShapeToRender.guitarFrets) {
                     initialShapeToRender = { guitarFrets: ["x","x","x","x","x","x"], displayName: "N/A" };
@@ -325,12 +324,12 @@ async function renderSongOutput(songData, allGeneratedChordsSet, styleNote, main
                     entryHtmlContent += `<span class="shape-position-indicator" id="pos-indicator-${sanitizedChordNameId}">N/A</span>`;
                 }
                 entryHtmlContent += `</div>`;
-                
+
                 entryDiv.innerHTML = entryHtmlContent;
-                
+
                 entryDiv.querySelectorAll('.shape-nav-arrow').forEach(arrow => {
                     arrow.addEventListener('click', (e) => {
-                        const chordName = e.currentTarget.dataset.chord; 
+                        const chordName = e.currentTarget.dataset.chord;
                         const direction = e.currentTarget.classList.contains('prev-shape') ? -1 : 1;
                         navigateShape(chordName, direction);
                     });
@@ -339,8 +338,8 @@ async function renderSongOutput(songData, allGeneratedChordsSet, styleNote, main
                 const diagramContainerForInteraction = entryDiv.querySelector('.diagram-container');
                 if (diagramContainerForInteraction && currentFundamentalData.shapes.length > 1) {
                     let touchstartX = 0; let touchstartY = 0;
-                    const swipeThreshold = 50; 
-                    const tapMaxTime = 250; 
+                    const swipeThreshold = 50;
+                    const tapMaxTime = 250;
                     let touchStartTime = 0;
 
                     diagramContainerForInteraction.addEventListener('touchstart', function(event) {
@@ -357,21 +356,21 @@ async function renderSongOutput(songData, allGeneratedChordsSet, styleNote, main
                         const xDiff = touchendX - touchstartX;
                         const yDiff = touchendY - touchstartY;
 
-                        if (timeDiff < tapMaxTime && Math.abs(xDiff) < 20 && Math.abs(yDiff) < 20) { 
-                            const rect = event.currentTarget.getBoundingClientRect(); 
+                        if (timeDiff < tapMaxTime && Math.abs(xDiff) < 20 && Math.abs(yDiff) < 20) {
+                            const rect = event.currentTarget.getBoundingClientRect();
                             const tapXrelative = event.changedTouches[0].clientX - rect.left;
-                            if (tapXrelative < rect.width / 2) { navigateShape(chordName, -1); } 
+                            if (tapXrelative < rect.width / 2) { navigateShape(chordName, -1); }
                             else { navigateShape(chordName, 1); }
-                            return; 
+                            return;
                         }
-                        if (Math.abs(xDiff) > Math.abs(yDiff) && Math.abs(xDiff) >= swipeThreshold) { 
-                            if (xDiff < 0) { navigateShape(chordName, 1); } 
+                        if (Math.abs(xDiff) > Math.abs(yDiff) && Math.abs(xDiff) >= swipeThreshold) {
+                            if (xDiff < 0) { navigateShape(chordName, 1); }
                             else { navigateShape(chordName, -1); }
                         }
                     }, {passive: true});
                 }
             }
-        })(); 
+        })();
         chordLoadPromises.push(promise);
     });
 
@@ -401,7 +400,7 @@ function updateEstimatedSongDuration() {
         const sectionTS = section.timeSignature;
         const beatsPerMeasureInSection = sectionTS[0];
         const beatUnitValueInSection = sectionTS[1];
-        const ticksPerBeatForThisSectionCalc = (4 / beatUnitValueInSection) * (TICKS_PER_QUARTER_NOTE_REFERENCE || 128); 
+        const ticksPerBeatForThisSectionCalc = (4 / beatUnitValueInSection) * (TICKS_PER_QUARTER_NOTE_REFERENCE || 128);
         const sectionDurationTicks = section.measures * beatsPerMeasureInSection * ticksPerBeatForThisSectionCalc;
         estimatedTotalSeconds += (sectionDurationTicks / (TICKS_PER_QUARTER_NOTE_REFERENCE || 128)) * (60 / currentMidiData.bpm);
     });

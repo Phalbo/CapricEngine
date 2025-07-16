@@ -101,20 +101,35 @@ document.addEventListener('DOMContentLoaded', () => {
         if (randomOption) randomOption.textContent = "Random";
     }
 
-    if (structureDropdown) {
-        const populateStructures = () => {
-            Object.keys(SONG_STRUCTURE_TEMPLATES).forEach(id => {
-                const opt = document.createElement('option');
-                opt.value = id; opt.textContent = id;
-                structureDropdown.appendChild(opt);
-            });
-        };
-        if (typeof SONG_STRUCTURE_TEMPLATES !== 'undefined' && Object.keys(SONG_STRUCTURE_TEMPLATES).length > 0) {
-            populateStructures();
-        } else if (typeof loadSongStructures === 'function') {
-            loadSongStructures().then(populateStructures).catch(() => {});
+    const moodDropdown = document.getElementById('mood');
+
+    const populateStructures = (mood = null) => {
+        structureDropdown.innerHTML = '<option value="random" selected>Random (based on Mood)</option>'; // Pulisce e aggiunge l'opzione random
+
+        let templates = SONG_STRUCTURE_TEMPLATES;
+        if (mood) {
+            templates = SONG_STRUCTURE_TEMPLATES.filter(t => t.mood === mood);
         }
+
+        templates.forEach(template => {
+            const opt = document.createElement('option');
+            opt.value = template.id;
+            opt.textContent = template.name;
+            structureDropdown.appendChild(opt);
+        });
+    };
+
+    if (typeof loadSongStructures === 'function') {
+        loadSongStructures().then(() => {
+            populateStructures(moodDropdown.value); // Popola inizialmente con il mood selezionato
+        }).catch(() => {
+            console.error("Could not load structures for dropdown.");
+        });
     }
+
+    moodDropdown.addEventListener('change', (event) => {
+        populateStructures(event.target.value);
+    });
     // --- Inizializzazione libreria accordi ---
     if (typeof buildChordLibrary === "function") {
         CHORD_LIB = buildChordLibrary();

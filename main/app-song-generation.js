@@ -259,9 +259,13 @@ async function generateSongArchitecture() {
 
 
 
+        const moodProfile = MOOD_PROFILES[mood] || MOOD_PROFILES["very_normal_person"];
+
         let selectedKey;
         if (selectedKeyOptionValue === "random") {
-            selectedKey = getRandomElement(possibleKeysAndModes);
+            const allowedScales = moodProfile.scales;
+            const filteredKeys = possibleKeysAndModes.filter(k => allowedScales.includes(k.mode));
+            selectedKey = getRandomElement(filteredKeys.length > 0 ? filteredKeys : possibleKeysAndModes);
         } else {
             const parts = selectedKeyOptionValue.split('_');
             selectedKey = possibleKeysAndModes.find(k => k.root === parts[0] && k.mode === parts[1]) || getRandomElement(possibleKeysAndModes);
@@ -274,16 +278,14 @@ async function generateSongArchitecture() {
 
                const bpm = generateBPM(tempoFeeling);
 
-        let songStructureDefinition = null;
-        if (selectedStructureTemplate && selectedStructureTemplate !== 'random' && typeof getSongStructure === 'function') {
-            songStructureDefinition = getSongStructure(selectedStructureTemplate);
-        }
+        let songStructureDefinition = getSongStructure(selectedStructureTemplate, mood);
 
         if (!songStructureDefinition) {
-            const moodStructKey = mood in MOOD_SONG_STRUCTURES ? mood : "very_normal_person";
-            songStructureDefinition = getRandomElement(MOOD_SONG_STRUCTURES[moodStructKey]);
-            if (!songStructureDefinition || songStructureDefinition.length === 0) {
-                songStructureDefinition = getSongStructure();
+            // Fallback se getSongStructure non restituisce una struttura valida
+            songStructureDefinition = getSongStructure('random', mood); // Prova a prenderne una casuale per quel mood
+            if (!songStructureDefinition) {
+                 // Ultimate fallback a una struttura di default
+                songStructureDefinition = ["Intro", "Verse", "Chorus", "Outro"];
             }
         }
 
@@ -311,7 +313,7 @@ async function generateSongArchitecture() {
 
         const songTitle = `Phalbo Caprice n ${capriceNumber}`;
         const displaySongTitle = `Phalbo Caprice n ${capriceNumber}`;
-        const styleNote = (typeof moodToStyleNotes !== 'undefined' && moodToStyleNotes[mood]) ? moodToStyleNotes[mood] : "Experiment.";
+        const styleNote = moodProfile.styleNotes || "Experiment.";
 
         currentMidiData = {
             title: songTitle, displayTitle: displaySongTitle, bpm: bpm, timeSignatureChanges: [], sections: [],
