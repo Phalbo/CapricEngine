@@ -1,6 +1,21 @@
+# CapricEngine v2.20
 
-# CapricEngine v2.12
+## Changelog (v2.20)
 
+*   **Mood-Based Generation:** The song generation logic has been significantly improved to be more mood-aware.
+    *   **Song Structure Templates:** Added 20 new song structure templates, each with a descriptive name (e.g., "Build & Collapse", "Fast Spiral") and associated with a specific mood. The UI now displays these names and filters them based on the selected mood.
+    *   **Mood Profiles:** Introduced a new `MOOD_PROFILES` data structure that links moods to specific scales and style notes. This ensures a more coherent and context-aware musical output.
+    *   **Smarter Key Selection:** When "Random" is selected for the key, the engine now chooses from a list of scales appropriate for the selected mood.
+
+*   **UI/UX Improvements:**
+    *   The "Structure Template" dropdown is now dynamically populated based on the selected mood.
+    *   "Style Notes" are now displayed in the UI, providing a hint about the musical direction of the generated piece.
+
+*   **Code Refactoring:**
+    *   Replaced the old `MOOD_SONG_STRUCTURES` with the more comprehensive `MOOD_PROFILES`.
+    *   Refactored the song generation and UI rendering logic to use the new mood-based system.
+
+## Overview
 
 CapricEngine is a web-based application that procedurally generates musical compositions. It allows users to select a mood, tempo, and key, and then generates a complete song structure with chords, a bassline, a melody, and a drum track. The application is built with HTML, CSS, and JavaScript, and uses the `midiwriter.js` library to export the generated music as MIDI files.
 
@@ -71,4 +86,3 @@ Here is a list of potential improvements and new features for future versions of
 *   **In-Browser MIDI Preview:** Allow users to preview the generated tracks in the browser using the Web Audio API and a SoundFont or a library like `tone.js`.
 *   **MusicXML Export:** Consider adding the ability to export the generated music as MusicXML files, which can be imported into a wide range of notation software.
 *   **Custom Presets:** Allow users to save their own custom patterns and presets for future use.
-
