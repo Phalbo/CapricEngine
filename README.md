@@ -1,7 +1,7 @@
 # CapricEngine v2.20
 
 
-## Changelog (v2.20)
+## Changelog (v2.20) website dead
 
 
 *   **Mood-Based Generation:** The song generation logic has been significantly improved to be more mood-aware.
